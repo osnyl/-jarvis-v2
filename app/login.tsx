@@ -1,6 +1,12 @@
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import auth from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: '587082638085-08jncs7ri3uig5d7bopq5aj7a7ilnss6.apps.googleusercontent.com',
+});
 
 export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
@@ -9,7 +15,10 @@ export default function LoginScreen() {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      // Firebase Google Auth - à configurer
+      await GoogleSignin.hasPlayServices();
+      const { data } = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(data?.idToken ?? '');
+      await auth().signInWithCredential(googleCredential);
       router.replace('/(drawer)/chat');
     } catch (e) {
       console.error('Erreur auth:', e);
