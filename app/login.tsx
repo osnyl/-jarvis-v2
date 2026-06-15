@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import auth from '@react-native-firebase/auth';
@@ -17,11 +17,14 @@ export default function LoginScreen() {
     try {
       await GoogleSignin.hasPlayServices();
       const { data } = await GoogleSignin.signIn();
+      console.log('Google data:', JSON.stringify(data));
       const googleCredential = auth.GoogleAuthProvider.credential(data?.idToken ?? '');
-      await auth().signInWithCredential(googleCredential);
+      const result = await auth().signInWithCredential(googleCredential);
+      console.log('Firebase result:', result.user.email);
       router.replace('/(drawer)/chat');
-    } catch (e) {
+    } catch (e: any) {
       console.error('Erreur auth:', e);
+      Alert.alert('Erreur', e?.message ?? JSON.stringify(e));
     } finally {
       setLoading(false);
     }
