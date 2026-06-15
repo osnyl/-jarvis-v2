@@ -14,6 +14,13 @@
       "expo-router",
       "@react-native-firebase/app",
       "@react-native-firebase/auth"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "de74ad87-a2bc-4855-a977-254c1711388f"
+      }
+    },
+    "owner": "nomdutilisateur"
   }
 }
