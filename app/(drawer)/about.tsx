@@ -1,80 +1,127 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function AboutScreen() {
-  const showJarvisDescription = () => {
-    Alert.alert(
-      'C’est qui Jarvis ?',
-      'Jarvis est plus qu’un simple assistant personnel : c’est un proche, un compagnon intelligent qui vous permet de vous ressourcer, de trouver des réponses à vos questions sur vos activités, et d’accompagner vos enfants dans leurs projets d’étude. Développé dans une vision d’aide pour l’Afrique, principalement le Bénin, Jarvis s’adresse à tous : parents, étudiants, professionnels.',
-      [{ text: 'OK' }]
-    );
-  };
+  const router = useRouter();
 
-  const showDeveloperIdentity = () => {
-    Alert.alert(
-      'Identité du développeur',
-      'Nom du Startup : Noelie\nNom du développeur : Osnyl 2.0\nContact : sossoubiadjacharbel@gmail.com',
-      [{ text: 'OK' }]
-    );
-  };
-
-  const showLegalMention = () => {
-    Alert.alert(
-      '⚠️ Mention légale',
-      'Attention, ce projet est le seul que j’ai. Si tu le casses, je pleure.\n\nJarvis a été développé avec amour (et beaucoup de café) par Osnyl.\n\nToute reproduction, vol ou utilisation malveillante est interdite, sauf si tu m’invites à manger. 😄',
-      [{ text: 'Je promets de ne pas casser', style: 'default' }]
-    );
-  };
+  const aboutItems = [
+    { icon: 'sparkles-outline', label: "C'est qui Jarvis ?", route: '/about-jarvis' },
+    { icon: 'person-circle-outline', label: 'Identité du développeur', route: '/about-developer' },
+    { icon: 'logo-github', label: 'GitHub', route: '/about-github' },
+    { icon: 'document-text-outline', label: 'Mention légale', route: '/about-legal' },
+  ];
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.item} onPress={showJarvisDescription}>
-        <Text style={styles.itemText}>C’est qui Jarvis ?</Text>
-      </TouchableOpacity>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+      <View style={styles.header}>
+        <View style={styles.logoCircle}>
+          <Ionicons name="sparkles" size={32} color="#FFD700" />
+        </View>
+        <Text style={styles.headerTitle}>JARVIS</Text>
+        <Text style={styles.headerSubtitle}>Votre assistant IA personnel</Text>
+      </View>
 
-      <TouchableOpacity style={styles.item} onPress={showDeveloperIdentity}>
-        <Text style={styles.itemText}>Identité du développeur</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.item} onPress={() => Linking.openURL('https://github.com/osnyl/jarvis-v2')}>
-        <Text style={styles.itemText}>GitHub</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.item} onPress={showLegalMention}>
-        <Text style={styles.itemText}>Mention légale</Text>
-      </TouchableOpacity>
+      <View style={styles.card}>
+        {aboutItems.map((item, idx) => (
+          <React.Fragment key={idx}>
+            <TouchableOpacity
+              style={styles.item}
+              onPress={() => router.push(item.route as any)}
+              activeOpacity={0.6}
+            >
+              <View style={styles.itemLeft}>
+                <Ionicons name={item.icon as any} size={20} color="#FFD700" />
+                <Text style={styles.itemText}>{item.label}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color="#6B6B6B" />
+            </TouchableOpacity>
+            {idx < aboutItems.length - 1 && <View style={styles.divider} />}
+          </React.Fragment>
+        ))}
+      </View>
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>Version 1.0.0</Text>
         <Text style={styles.footerText}>© 2026 Osnyl – Tous droits réservés.</Text>
+        <Text style={styles.footerEmoji}>Fait avec ❤️ et beaucoup de ☕ au Bénin</Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0A0A0A',
-    paddingTop: 8,
+  container: { flex: 1, backgroundColor: '#0A0A0A' },
+  header: {
+    alignItems: 'center',
+    paddingTop: 32,
+    paddingBottom: 24,
+  },
+  logoCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 20,
+    backgroundColor: '#161616',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFD700',
+    marginBottom: 12,
+  },
+  headerTitle: {
+    color: '#FFD700',
+    fontSize: 24,
+    fontWeight: 'bold',
+    letterSpacing: 4,
+  },
+  headerSubtitle: {
+    color: '#A8A8A8',
+    fontSize: 13,
+    marginTop: 4,
+  },
+  card: {
+    backgroundColor: '#141414',
+    marginHorizontal: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+    overflow: 'hidden',
   },
   item: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#1F1F1F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+  },
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
   },
   itemText: {
     color: '#E5E5E5',
-    fontSize: 16,
+    fontSize: 15,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#1F1F1F',
+    marginLeft: 52,
   },
   footer: {
-    marginTop: 16,
+    marginTop: 28,
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   footerText: {
     color: '#6B6B6B',
     fontSize: 12,
+  },
+  footerEmoji: {
+    color: '#4A4A4A',
+    fontSize: 11,
+    marginTop: 8,
+    fontStyle: 'italic',
   },
 });

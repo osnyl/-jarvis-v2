@@ -1,0 +1,134 @@
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
+export default function AboutLegalScreen() {
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={22} color="#E5E5E5" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Mention légale</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.warningCard}>
+          <Ionicons name="warning-outline" size={20} color="#FFD700" />
+          <Text style={styles.warningText}>
+            Attention, ce projet est le seul que j'ai. Si tu le casses, je pleure. 😢
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>💛 Une touche personnelle</Text>
+          <Text style={styles.sectionText}>
+            Jarvis a été développé avec amour (et beaucoup de café ☕) par
+            Osnyl. Toute reproduction, vol ou utilisation malveillante est
+            interdite, sauf si tu m'invites à manger. 😄
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>📄 Propriété intellectuelle</Text>
+          <Text style={styles.sectionText}>
+            L'application Jarvis, son code source, son design et son contenu
+            sont la propriété exclusive de la startup Noelie et de son
+            développeur Osnyl. Toute reproduction non autorisée, totale ou
+            partielle, est strictement interdite.
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>🔒 Protection des données</Text>
+          <Text style={styles.sectionText}>
+            Vos conversations avec Jarvis sont stockées localement sur votre
+            appareil. Aucune donnée personnelle n'est vendue ou partagée avec
+            des tiers. Les échanges avec le serveur sont protégés par une clé
+            d'authentification sécurisée.
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>⚙️ Limitation de responsabilité</Text>
+          <Text style={styles.sectionText}>
+            Jarvis fournit des informations à titre indicatif grâce à
+            l'intelligence artificielle. Bien que nous nous efforcions
+            d'assurer la fiabilité des réponses, l'application ne saurait être
+            tenue responsable d'éventuelles erreurs ou décisions prises sur la
+            base des réponses fournies.
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>🌍 Disponibilité du service</Text>
+          <Text style={styles.sectionText}>
+            Le service peut être temporairement indisponible pour des raisons
+            de maintenance ou de mise à jour. Nous nous efforçons de
+            maintenir une disponibilité maximale du service.
+          </Text>
+        </View>
+
+        <TouchableOpacity style={styles.promiseButton}>
+          <Text style={styles.promiseText}>Je promets de ne pas casser l'app 🤝</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.dateText}>Dernière mise à jour : Juin 2026</Text>
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#0A0A0A' },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1F1F1F',
+  },
+  backButton: { marginRight: 12 },
+  headerTitle: { color: '#F5F5F5', fontSize: 17, fontWeight: 'bold' },
+  content: { padding: 20, paddingBottom: 40 },
+  warningCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: '#1A1810',
+    borderWidth: 1,
+    borderColor: '#FFD70044',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 20,
+  },
+  warningText: { color: '#FFD700', fontSize: 13, flex: 1, lineHeight: 18 },
+  section: {
+    backgroundColor: '#141414',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+    padding: 16,
+    marginBottom: 14,
+  },
+  sectionTitle: { color: '#F5F5F5', fontSize: 14, fontWeight: '700', marginBottom: 8 },
+  sectionText: { color: '#A8A8A8', fontSize: 13, lineHeight: 20 },
+  promiseButton: {
+    backgroundColor: '#1A1A1A',
+    borderWidth: 1,
+    borderColor: '#FFD700',
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  promiseText: { color: '#FFD700', fontSize: 14, fontWeight: '600' },
+  dateText: {
+    color: '#4A4A4A',
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 20,
+  },
+});

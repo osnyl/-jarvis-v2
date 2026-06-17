@@ -24,6 +24,28 @@ const STORAGE_KEY = 'chat_messages';
 interface Message {
   text: string;
   isUser: boolean;
+  animated?: boolean;
+}
+
+// Composant pour le texte qui s'affiche progressivement
+function TypingText({ text, style, onComplete }: { text: string; style: any; onComplete?: () => void }) {
+  const [displayedText, setDisplayedText] = useState('');
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index <= text.length) {
+        setDisplayedText(text.slice(0, index));
+        index++;
+      } else {
+        clearInterval(interval);
+        onComplete?.();
+      }
+    }, 15);
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return <Text style={style}>{displayedText}</Text>;
 }
 
 export default function ChatScreen() {
@@ -43,7 +65,7 @@ export default function ChatScreen() {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        setMessages(parsed);
+        setMessages(parsed.map((m: Message) => ({ ...m, animated: true })));
         if (parsed.length > 0) setShowBanner(false);
       }
     } catch (e) {}
@@ -60,7 +82,7 @@ export default function ChatScreen() {
     if (showBanner) setShowBanner(false);
 
     const userMsg = text.trim();
-    const updatedMessages = [...messages, { text: userMsg, isUser: true }];
+    const updatedMessages = [...messages, { text: userMsg, isUser: true, animated: true }];
     setMessages(updatedMessages);
     saveMessages(updatedMessages);
     setMessage('');
@@ -77,12 +99,12 @@ export default function ChatScreen() {
       });
       const data = await response.json();
       const reply = data.response || "Désolé, je n'ai pas compris.";
-      const newMessages = [...updatedMessages, { text: reply, isUser: false }];
+      const newMessages = [...updatedMessages, { text: reply, isUser: false, animated: false }];
       setMessages(newMessages);
       saveMessages(newMessages);
     } catch (error) {
       const errorMsg = 'Erreur de connexion au serveur.';
-      const newMessages = [...updatedMessages, { text: errorMsg, isUser: false }];
+      const newMessages = [...updatedMessages, { text: errorMsg, isUser: false, animated: false }];
       setMessages(newMessages);
       saveMessages(newMessages);
       Alert.alert('Erreur', errorMsg);
@@ -92,10 +114,14 @@ export default function ChatScreen() {
     }
   };
 
+  const markAnimated = (idx: number) => {
+    setMessages(prev => prev.map((m, i) => i === idx ? { ...m, animated: true } : m));
+  };
+
   const toggleRecording = () => {
     setIsRecording(!isRecording);
     if (!isRecording) {
-      Alert.alert('🎤 Enregistrement', 'L\'enregistrement vocal sera disponible prochainement.');
+      Alert.alert('🎤 Enregistrement', "L'enregistrement vocal sera disponible prochainement.");
     }
     setIsRecording(false);
   };
@@ -104,50 +130,66 @@ export default function ChatScreen() {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      keyboardVerticalOffset={0}
     >
-      {/* En‑tête avec logo + titre */}
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <Image
-            source={require('../../assets/Jarvis.png')}
-            style={styles.headerIcon}
-          />
+          <View style={styles.logoWrapper}>
+            <Image
+              source={require('../../assets/Jarvis.png')}
+              style={styles.headerIcon}
+            />
+          </View>
           <Text style={styles.headerTitle}>JARVIS</Text>
         </View>
       </View>
 
-      {/* Bannière d'accueil (disparait après premier message) */}
-      {showBanner && (
-        <View style={styles.banner}>
-          <Text style={styles.bannerText}>
-            Bonjour ! Je suis JARVIS, votre assistant intelligent. Posez-moi vos questions, je suis là pour vous aider.
-          </Text>
-        </View>
-      )}
-
-      <ScrollView
-        ref={scrollRef}
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
-      >
-        {messages.map((msg, idx) => (
-          <View
-            key={idx}
-            style={[
-              styles.messageBubble,
-              msg.isUser ? styles.userBubble : styles.assistantBubble,
-            ]}
-          >
-            <Text style={msg.isUser ? styles.userText : styles.assistantText}>{msg.text}</Text>
+      <View style={styles.chatArea}>
+        {showBanner && (
+          <View style={styles.banner}>
+            <Ionicons name="sparkles" size={20} color="#FFD700" style={{ marginBottom: 8 }} />
+            <Text style={styles.bannerText}>
+              Bonjour ! Je suis JARVIS, votre assistant intelligent.{'\n'}Posez-moi vos questions, je suis là pour vous aider.
+            </Text>
           </View>
-        ))}
-        {loading && <ActivityIndicator style={styles.loader} color="#E5E5E5" />}
-      </ScrollView>
+        )}
+
+        <ScrollView
+          ref={scrollRef}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
+          keyboardShouldPersistTaps="handled"
+        >
+          {messages.map((msg, idx) => (
+            <View
+              key={idx}
+              style={msg.isUser ? styles.userBubble : styles.assistantBubble}
+            >
+              {!msg.isUser && !msg.animated ? (
+                <TypingText
+                  text={msg.text}
+                  style={styles.assistantText}
+                  onComplete={() => {
+                    markAnimated(idx);
+                    scrollRef.current?.scrollToEnd({ animated: true });
+                  }}
+                />
+              ) : (
+                <Text style={msg.isUser ? styles.userText : styles.assistantText}>{msg.text}</Text>
+              )}
+            </View>
+          ))}
+          {loading && (
+            <View style={styles.loaderRow}>
+              <ActivityIndicator color="#FFD700" size="small" />
+              <Text style={styles.loaderText}>Jarvis réfléchit...</Text>
+            </View>
+          )}
+        </ScrollView>
+      </View>
 
       <View style={styles.inputContainer}>
-        {/* Bouton + */}
         <TouchableOpacity
           onPress={() => {
             Alert.alert(
@@ -175,7 +217,6 @@ export default function ChatScreen() {
           multiline
         />
 
-        {/* Bouton enregistrement studio (cercle rouge) */}
         <TouchableOpacity
           onPress={toggleRecording}
           style={[styles.iconButton, isRecording && styles.iconButtonActive]}
@@ -205,7 +246,8 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A0A' },
   header: {
-    paddingVertical: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: '#0A0A0A',
     borderBottomWidth: 1,
     borderBottomColor: '#1F1F1F',
@@ -213,26 +255,39 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  logoWrapper: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#161616',
     justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#FFD700',
   },
   headerIcon: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
     resizeMode: 'contain',
-    marginRight: 8,
   },
   headerTitle: {
-    fontSize: 18,
-    color: '#E5E5E5',
+    fontSize: 17,
+    color: '#FFD700',
     fontWeight: 'bold',
-    letterSpacing: 4,
+    letterSpacing: 3,
   },
+  chatArea: { flex: 1 },
   banner: {
-    backgroundColor: '#161616',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#262626',
+    backgroundColor: '#141414',
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#FFD70033',
+    alignItems: 'center',
   },
   bannerText: {
     color: '#A8A8A8',
@@ -241,28 +296,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   scrollView: { flex: 1 },
-  scrollContent: { flexGrow: 1, justifyContent: 'flex-end', padding: 16, gap: 4 },
-  messageBubble: {
+  scrollContent: { flexGrow: 1, justifyContent: 'flex-end', padding: 16, gap: 8 },
+  // Bulle utilisateur (avec fond)
+  userBubble: {
+    backgroundColor: '#FFD700',
+    alignSelf: 'flex-end',
     paddingHorizontal: 14,
     paddingVertical: 10,
-    marginVertical: 4,
     borderRadius: 16,
-    maxWidth: '100%',
-  },
-  userBubble: {
-    backgroundColor: '#2C2C2C',
-    alignSelf: 'flex-end',
     borderBottomRightRadius: 4,
     maxWidth: '75%',
+    marginVertical: 2,
   },
+  // Texte assistant SANS cadre, juste le texte
   assistantBubble: {
-    backgroundColor: 'transparent',
     alignSelf: 'flex-start',
     maxWidth: '100%',
+    marginVertical: 4,
   },
-  userText: { color: '#E5E5E5', fontSize: 15, lineHeight: 21 },
-  assistantText: { color: '#F5F5F5', fontSize: 15, lineHeight: 21 },
-  loader: { marginTop: 8, marginBottom: 8, alignSelf: 'center' },
+  userText: { color: '#0A0A0A', fontSize: 15, lineHeight: 21, fontWeight: '600' },
+  assistantText: { color: '#F5F5F5', fontSize: 15, lineHeight: 22 },
+  loaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  loaderText: { color: '#888', fontSize: 13, fontStyle: 'italic' },
   inputContainer: {
     flexDirection: 'row',
     gap: 8,
@@ -300,7 +361,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: '#FFD700',
     justifyContent: 'center',
     alignItems: 'center',
   },

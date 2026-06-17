@@ -1,5 +1,4 @@
 import { Drawer } from 'expo-router/drawer';
-
 export default function DrawerLayout() {
   return (
     <Drawer
@@ -27,9 +26,16 @@ export default function DrawerLayout() {
           drawerLabel: '➕ Nouvelle discussion',
         }}
       />
-
-      {/* Écrans principaux */}
-      <Drawer.Screen name="home" options={{ title: 'Accueil', drawerLabel: 'Accueil' }} />
+      {/* Écran Accueil - SANS drawer/header */}
+      <Drawer.Screen
+        name="home"
+        options={{
+          title: 'Accueil',
+          drawerLabel: 'Accueil',
+          headerShown: false,
+          swipeEnabled: false,
+        }}
+      />
       <Drawer.Screen name="chat" options={{ title: 'Chat', drawerLabel: 'Discussions' }} />
       <Drawer.Screen name="reminders" options={{ title: 'Rappels', drawerLabel: 'Rappels' }} />
       <Drawer.Screen name="reports" options={{ title: 'Rapports', drawerLabel: 'Rapports' }} />
@@ -37,6 +43,14 @@ export default function DrawerLayout() {
       <Drawer.Screen name="security" options={{ title: 'Sécurité', drawerLabel: 'Sécurité' }} />
       <Drawer.Screen name="help" options={{ title: 'Aide', drawerLabel: 'Aide' }} />
       <Drawer.Screen name="about" options={{ title: 'À propos', drawerLabel: 'À propos' }} />
+      {/* Energy - caché du drawer, accessible seulement via bouton sur Accueil */}
+      <Drawer.Screen
+        name="energy"
+        options={{
+          title: 'Délesteur',
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
     </Drawer>
   );
 }

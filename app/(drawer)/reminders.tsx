@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  TextInput,
-  Modal,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router, useFocusEffect } from 'expo-router';
 
 const STORAGE_KEY = 'reminders';
 
@@ -26,18 +23,6 @@ interface Reminder {
 
 export default function RemindersScreen() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [confirmMessage, setConfirmMessage] = useState('');
-
-  // Formulaire
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-
-  useEffect(() => {
-    loadReminders();
-  }, []);
 
   const loadReminders = async () => {
     try {
@@ -48,36 +33,18 @@ export default function RemindersScreen() {
     } catch (e) {}
   };
 
+  // Recharge les rappels chaque fois qu'on revient sur cet écran
+  useFocusEffect(
+    useCallback(() => {
+      loadReminders();
+    }, [])
+  );
+
   const saveReminders = async (newReminders: Reminder[]) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newReminders));
       setReminders(newReminders);
     } catch (e) {}
-  };
-
-  const addReminder = () => {
-    if (!name.trim()) {
-      Alert.alert('Erreur', 'Veuillez saisir un nom pour le rappel.');
-      return;
-    }
-    const newReminder: Reminder = {
-      id: Date.now().toString(),
-      name: name.trim(),
-      description: description.trim() || 'Aucune description',
-      date: date.trim() || 'Aujourd\'hui',
-      time: time.trim() || '12:00',
-      done: false,
-    };
-    const updated = [...reminders, newReminder];
-    saveReminders(updated);
-    setModalVisible(false);
-    setName('');
-    setDescription('');
-    setDate('');
-    setTime('');
-    // Afficher la phrase de confirmation
-    setConfirmMessage('N\'oubliez plus rien ! Jarvis veille sur vous. 😉');
-    setTimeout(() => setConfirmMessage(''), 4000);
   };
 
   const toggleDone = (id: string) => {
@@ -103,19 +70,16 @@ export default function RemindersScreen() {
   const doneCount = reminders.filter((r) => r.done).length;
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerIcon}>🔔</Text>
         <Text style={styles.headerTitle}>Rappels</Text>
       </View>
 
-      {/* Bouton Programmer un rappel */}
+      {/* Bouton Programmer un rappel - navigue vers nouvel écran */}
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => setModalVisible(true)}
+        onPress={() => router.push('/(drawer)/add-reminder')}
       >
         <Text style={styles.addButtonText}>📝 Programmer un rappel</Text>
         <Text style={styles.addButtonIcon}>＋</Text>
@@ -151,92 +115,13 @@ export default function RemindersScreen() {
         )}
       </ScrollView>
 
-      {/* Phrase de confirmation */}
-      {confirmMessage !== '' && (
-        <View style={styles.confirmCard}>
-          <Text style={styles.confirmText}>{confirmMessage}</Text>
-        </View>
-      )}
-
       {/* Résumé */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
           {reminders.length} rappel{reminders.length > 1 && 's'} ({doneCount} fait{doneCount > 1 && 's'}, {reminders.length - doneCount} à faire)
         </Text>
       </View>
-
-      {/* Modal d'ajout avec ScrollView et KeyboardAvoidingView */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <KeyboardAvoidingView
-          style={styles.modalOverlay}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <ScrollView
-            contentContainerStyle={styles.modalContent}
-            keyboardShouldPersistTaps="handled"
-          >
-            <Text style={styles.modalTitle}>Programmer un rappel</Text>
-
-            <Text style={styles.label}>Nom</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={setName}
-              placeholder="Ex: Acheter du lait"
-              placeholderTextColor="#666"
-            />
-
-            <Text style={styles.label}>Description</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              value={description}
-              onChangeText={setDescription}
-              placeholder="Ex: Pense à prendre du lait..."
-              placeholderTextColor="#666"
-              multiline
-            />
-
-            <Text style={styles.label}>Date</Text>
-            <TextInput
-              style={styles.input}
-              value={date}
-              onChangeText={setDate}
-              placeholder="JJ/MM/AAAA"
-              placeholderTextColor="#666"
-            />
-
-            <Text style={styles.label}>Heure</Text>
-            <TextInput
-              style={styles.input}
-              value={time}
-              onChangeText={setTime}
-              placeholder="HH:MM"
-              placeholderTextColor="#666"
-            />
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.modalButtonCancel]}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Annuler</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.modalButtonSave]}
-                onPress={addReminder}
-              >
-                <Text style={styles.modalButtonText}>Enregistrer</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </Modal>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -353,20 +238,6 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 18,
   },
-  confirmCard: {
-    backgroundColor: '#1A2A1A',
-    marginHorizontal: 16,
-    marginBottom: 8,
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#2A4A2A',
-  },
-  confirmText: {
-    color: '#A8E6A8',
-    fontSize: 14,
-    textAlign: 'center',
-  },
   footer: {
     borderTopWidth: 1,
     borderTopColor: '#1F1F1F',
@@ -377,69 +248,5 @@ const styles = StyleSheet.create({
   footerText: {
     color: '#6B6B6B',
     fontSize: 12,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#1A1A1A',
-    width: '90%',
-    maxWidth: 400,
-    padding: 24,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#2A2A2A',
-  },
-  modalTitle: {
-    color: '#F5F5F5',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  label: {
-    color: '#A8A8A8',
-    fontSize: 14,
-    marginBottom: 6,
-  },
-  input: {
-    backgroundColor: '#0A0A0A',
-    borderWidth: 1,
-    borderColor: '#2A2A2A',
-    borderRadius: 8,
-    padding: 12,
-    color: '#F5F5F5',
-    fontSize: 15,
-    marginBottom: 16,
-  },
-  textArea: {
-    minHeight: 60,
-    textAlignVertical: 'top',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-    marginTop: 8,
-  },
-  modalButton: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  modalButtonCancel: {
-    backgroundColor: '#2A2A2A',
-  },
-  modalButtonSave: {
-    backgroundColor: '#FFD700',
-  },
-  modalButtonText: {
-    color: '#000',
-    fontWeight: '600',
-    fontSize: 16,
   },
 });
