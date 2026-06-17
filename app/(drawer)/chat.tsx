@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
@@ -125,24 +127,23 @@ export default function ChatScreen() {
 
   return (
     <View style={styles.container}>
+      {/* HEADER FIXE */}
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <View style={styles.logoWrapper}>
-            <Image
-              source={require('../../assets/Jarvis.png')}
-              style={styles.headerIcon}
-            />
-          </View>
+          <Image
+            source={require('../../assets/Jarvis.png')}
+            style={styles.headerIcon}
+          />
           <Text style={styles.headerTitle}>JARVIS</Text>
         </View>
       </View>
 
+      {/* ZONE DE CHAT (flexible) */}
       <View style={styles.chatArea}>
         {showBanner && (
           <View style={styles.banner}>
-            <Ionicons name="sparkles" size={20} color="#D4D4D4" style={{ marginBottom: 8 }} />
             <Text style={styles.bannerText}>
-              Bonjour ! Je suis JARVIS, votre assistant intelligent.{'\n'}Posez-moi vos questions, je suis là pour vous aider.
+              Bonjour ! Je suis JARVIS, votre assistant intelligent. Posez-moi vos questions, je suis là pour vous aider.
             </Text>
           </View>
         )}
@@ -182,56 +183,62 @@ export default function ChatScreen() {
         </ScrollView>
       </View>
 
-      <View style={styles.inputContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            Alert.alert(
-              'Ajouter',
-              'Choisissez une action',
-              [
-                { text: '📎 Ajouter un fichier', onPress: () => {} },
-                { text: '🌍 Traduire', onPress: () => {} },
-                { text: '📷 Prendre une photo', onPress: () => {} },
-                { text: 'Annuler', style: 'cancel' },
-              ]
-            );
-          }}
-          style={styles.iconButton}
-        >
-          <Ionicons name="add" size={24} color="#E5E5E5" />
-        </TouchableOpacity>
-
-        <TextInput
-          style={styles.textInput}
-          value={message}
-          onChangeText={setMessage}
-          placeholder="Écrire un message..."
-          placeholderTextColor="#6B6B6B"
-          multiline
-        />
-
-        <TouchableOpacity
-          onPress={toggleRecording}
-          style={[styles.iconButton, isRecording && styles.iconButtonActive]}
-        >
-          <View
-            style={{
-              width: 14,
-              height: 14,
-              borderRadius: 7,
-              backgroundColor: isRecording ? '#FF3B30' : '#E5E5E5',
+      {/* BARRE DE SAISIE (remonte avec le clavier) */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      >
+        <View style={styles.inputContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                'Ajouter',
+                'Choisissez une action',
+                [
+                  { text: '📎 Ajouter un fichier', onPress: () => {} },
+                  { text: '🌍 Traduire', onPress: () => {} },
+                  { text: '📷 Prendre une photo', onPress: () => {} },
+                  { text: 'Annuler', style: 'cancel' },
+                ]
+              );
             }}
-          />
-        </TouchableOpacity>
+            style={styles.iconButton}
+          >
+            <Ionicons name="add" size={24} color="#E5E5E5" />
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => sendMessage(message)}
-          disabled={loading || !message.trim()}
-          style={[styles.sendButton, (!message.trim() || loading) && styles.sendButtonDisabled]}
-        >
-          <Ionicons name="arrow-up" size={20} color="#000" />
-        </TouchableOpacity>
-      </View>
+          <TextInput
+            style={styles.textInput}
+            value={message}
+            onChangeText={setMessage}
+            placeholder="Écrire un message..."
+            placeholderTextColor="#6B6B6B"
+            multiline
+          />
+
+          <TouchableOpacity
+            onPress={toggleRecording}
+            style={[styles.iconButton, isRecording && styles.iconButtonActive]}
+          >
+            <View
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: 7,
+                backgroundColor: isRecording ? '#FF3B30' : '#E5E5E5',
+              }}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => sendMessage(message)}
+            disabled={loading || !message.trim()}
+            style={[styles.sendButton, (!message.trim() || loading) && styles.sendButtonDisabled]}
+          >
+            <Ionicons name="arrow-up" size={20} color="#000" />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -248,25 +255,16 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  logoWrapper: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: '#161616',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: '#D4D4D4',
   },
   headerIcon: {
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
     resizeMode: 'contain',
+    marginRight: 8,
   },
   headerTitle: {
-    fontSize: 17,
+    fontSize: 18,
     color: '#D4D4D4',
     fontWeight: 'bold',
     letterSpacing: 3,
@@ -276,11 +274,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#141414',
     marginHorizontal: 16,
     marginTop: 16,
-    padding: 16,
-    borderRadius: 16,
+    padding: 14,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#D4D4D433',
-    alignItems: 'center',
+    borderColor: '#2A2A2A',
   },
   bannerText: {
     color: '#A8A8A8',
@@ -289,7 +286,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   scrollView: { flex: 1 },
-  scrollContent: { flexGrow: 1, justifyContent: 'flex-end', padding: 16, gap: 8 },
+  scrollContent: { flexGrow: 1, justifyContent: 'flex-end', padding: 16, gap: 6 },
   userBubble: {
     backgroundColor: '#D4D4D4',
     alignSelf: 'flex-end',
@@ -298,21 +295,18 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderBottomRightRadius: 4,
     maxWidth: '75%',
-    marginVertical: 2,
   },
   assistantBubble: {
     alignSelf: 'flex-start',
     maxWidth: '100%',
-    marginVertical: 4,
   },
-  userText: { color: '#0A0A0A', fontSize: 15, lineHeight: 21, fontWeight: '600' },
+  userText: { color: '#0A0A0A', fontSize: 15, lineHeight: 21 },
   assistantText: { color: '#F5F5F5', fontSize: 15, lineHeight: 22 },
   loaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginTop: 8,
-    marginBottom: 8,
+    marginTop: 4,
   },
   loaderText: { color: '#888', fontSize: 13, fontStyle: 'italic' },
   inputContainer: {
