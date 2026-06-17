@@ -19,15 +19,14 @@ export default function DrawerLayout() {
         headerTintColor: '#E5E5E5',
       }}
     >
-      {/* Nouvelle discussion */}
       <Drawer.Screen
         name="new-chat"
         options={{
           title: 'Nouvelle discussion',
           drawerLabel: '➕ Nouvelle discussion',
+          headerShown: false,
         }}
       />
-      {/* Écran Accueil - SANS drawer/header */}
       <Drawer.Screen
         name="home"
         options={{
@@ -37,20 +36,20 @@ export default function DrawerLayout() {
           swipeEnabled: false,
         }}
       />
-      <Drawer.Screen name="chat" options={{ title: 'Chat', drawerLabel: 'Discussions' }} />
-      <Drawer.Screen name="reminders" options={{ title: 'Rappels', drawerLabel: 'Rappels' }} />
-      <Drawer.Screen name="reports" options={{ title: 'Rapports', drawerLabel: 'Rapports' }} />
-      <Drawer.Screen name="settings" options={{ title: 'Paramètres', drawerLabel: 'Paramètres' }} />
-      <Drawer.Screen name="security" options={{ title: 'Sécurité', drawerLabel: 'Sécurité' }} />
-      <Drawer.Screen name="help" options={{ title: 'Aide', drawerLabel: 'Aide' }} />
-      <Drawer.Screen name="about" options={{ title: 'À propos', drawerLabel: 'À propos' }} />
+      <Drawer.Screen name="chat" options={{ title: 'Chat', drawerLabel: 'Discussions', headerShown: false }} />
+      <Drawer.Screen name="reminders" options={{ title: 'Rappels', drawerLabel: 'Rappels', headerShown: false }} />
+      <Drawer.Screen name="reports" options={{ title: 'Rapports', drawerLabel: 'Rapports', headerShown: false }} />
+      <Drawer.Screen name="settings" options={{ title: 'Paramètres', drawerLabel: 'Paramètres', headerShown: false }} />
+      <Drawer.Screen name="security" options={{ title: 'Sécurité', drawerLabel: 'Sécurité', headerShown: false }} />
+      <Drawer.Screen name="help" options={{ title: 'Aide', drawerLabel: 'Aide', headerShown: false }} />
+      <Drawer.Screen name="about" options={{ title: 'À propos', drawerLabel: 'À propos', headerShown: false }} />
 
-      {/* Écrans cachés du drawer - accessibles seulement via boutons internes */}
       <Drawer.Screen
         name="energy"
         options={{
           title: 'Délesteur',
           drawerItemStyle: { display: 'none' },
+          headerShown: false,
         }}
       />
       <Drawer.Screen
@@ -58,6 +57,7 @@ export default function DrawerLayout() {
         options={{
           title: 'Mentions légales',
           drawerItemStyle: { display: 'none' },
+          headerShown: false,
         }}
       />
       <Drawer.Screen
@@ -65,6 +65,7 @@ export default function DrawerLayout() {
         options={{
           title: 'GitHub',
           drawerItemStyle: { display: 'none' },
+          headerShown: false,
         }}
       />
       <Drawer.Screen
@@ -72,6 +73,7 @@ export default function DrawerLayout() {
         options={{
           title: 'À propos de JARVIS',
           drawerItemStyle: { display: 'none' },
+          headerShown: false,
         }}
       />
       <Drawer.Screen
@@ -79,6 +81,7 @@ export default function DrawerLayout() {
         options={{
           title: 'Le développeur',
           drawerItemStyle: { display: 'none' },
+          headerShown: false,
         }}
       />
       <Drawer.Screen
@@ -86,6 +89,7 @@ export default function DrawerLayout() {
         options={{
           title: 'Ajouter un rappel',
           drawerItemStyle: { display: 'none' },
+          headerShown: false,
         }}
       />
     </Drawer>
