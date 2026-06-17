@@ -1,4 +1,5 @@
 import { Drawer } from 'expo-router/drawer';
+
 export default function DrawerLayout() {
   return (
     <Drawer
@@ -43,11 +44,47 @@ export default function DrawerLayout() {
       <Drawer.Screen name="security" options={{ title: 'Sécurité', drawerLabel: 'Sécurité' }} />
       <Drawer.Screen name="help" options={{ title: 'Aide', drawerLabel: 'Aide' }} />
       <Drawer.Screen name="about" options={{ title: 'À propos', drawerLabel: 'À propos' }} />
-      {/* Energy - caché du drawer, accessible seulement via bouton sur Accueil */}
+
+      {/* Écrans cachés du drawer - accessibles seulement via boutons internes */}
       <Drawer.Screen
         name="energy"
         options={{
           title: 'Délesteur',
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="about-legal"
+        options={{
+          title: 'Mentions légales',
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="about-github"
+        options={{
+          title: 'GitHub',
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="about-jarvis"
+        options={{
+          title: 'À propos de JARVIS',
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="about-developer"
+        options={{
+          title: 'Le développeur',
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="add-reminder"
+        options={{
+          title: 'Ajouter un rappel',
           drawerItemStyle: { display: 'none' },
         }}
       />

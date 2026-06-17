@@ -8,8 +8,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  Platform,
-  KeyboardAvoidingView,
   Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,7 +25,6 @@ interface Message {
   animated?: boolean;
 }
 
-// Composant pour le texte qui s'affiche progressivement
 function TypingText({ text, style, onComplete }: { text: string; style: any; onComplete?: () => void }) {
   const [displayedText, setDisplayedText] = useState('');
 
@@ -127,11 +124,7 @@ export default function ChatScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={0}
-    >
+    <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <View style={styles.logoWrapper}>
@@ -239,7 +232,7 @@ export default function ChatScreen() {
           <Ionicons name="arrow-up" size={20} color="#000" />
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -297,7 +290,6 @@ const styles = StyleSheet.create({
   },
   scrollView: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'flex-end', padding: 16, gap: 8 },
-  // Bulle utilisateur (avec fond)
   userBubble: {
     backgroundColor: '#FFD700',
     alignSelf: 'flex-end',
@@ -308,7 +300,6 @@ const styles = StyleSheet.create({
     maxWidth: '75%',
     marginVertical: 2,
   },
-  // Texte assistant SANS cadre, juste le texte
   assistantBubble: {
     alignSelf: 'flex-start',
     maxWidth: '100%',
