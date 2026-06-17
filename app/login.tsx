@@ -21,7 +21,7 @@ export default function LoginScreen() {
       const googleCredential = auth.GoogleAuthProvider.credential(data?.idToken ?? '');
       const result = await auth().signInWithCredential(googleCredential);
       console.log('Firebase result:', result.user.email);
-      router.replace('/(drawer)/chat');
+      router.replace('/home'); // ✅ Redirection vers l'écran d'accueil
     } catch (e: any) {
       console.error('Erreur auth:', e);
       Alert.alert('Erreur', e?.message ?? JSON.stringify(e));

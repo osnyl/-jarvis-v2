@@ -3,6 +3,7 @@ import { Drawer } from 'expo-router/drawer';
 export default function DrawerLayout() {
   return (
     <Drawer>
+      <Drawer.Screen name="home" options={{ title: 'Accueil', drawerLabel: 'Accueil' }} />
       <Drawer.Screen name="chat" options={{ title: 'Chat', drawerLabel: 'Discussions' }} />
       <Drawer.Screen name="energy" options={{ title: 'Délesteur', drawerLabel: 'Délesteur Énergétique' }} />
       <Drawer.Screen name="reminders" options={{ title: 'Rappels', drawerLabel: 'Rappels' }} />
