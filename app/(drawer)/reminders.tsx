@@ -121,7 +121,7 @@ export default function RemindersScreen() {
         <Text style={styles.addButtonIcon}>＋</Text>
       </TouchableOpacity>
 
-      {/* Phrase d'accueil (option 2) */}
+      {/* Phrase d'accueil */}
       <View style={styles.welcomeCard}>
         <Text style={styles.welcomeText}>
           Un bon planning est la clé de la réussite. Que voulez-vous programmer aujourd'hui ?
@@ -151,7 +151,7 @@ export default function RemindersScreen() {
         )}
       </ScrollView>
 
-      {/* Phrase de confirmation (option 3) */}
+      {/* Phrase de confirmation */}
       {confirmMessage !== '' && (
         <View style={styles.confirmCard}>
           <Text style={styles.confirmText}>{confirmMessage}</Text>
@@ -165,15 +165,21 @@ export default function RemindersScreen() {
         </Text>
       </View>
 
-      {/* Modal d'ajout */}
+      {/* Modal d'ajout avec ScrollView et KeyboardAvoidingView */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <ScrollView
+            contentContainerStyle={styles.modalContent}
+            keyboardShouldPersistTaps="handled"
+          >
             <Text style={styles.modalTitle}>Programmer un rappel</Text>
 
             <Text style={styles.label}>Nom</Text>
@@ -190,7 +196,7 @@ export default function RemindersScreen() {
               style={[styles.input, styles.textArea]}
               value={description}
               onChangeText={setDescription}
-              placeholder="Ex: Pense à prendre du lait pour le petit-déjeuner"
+              placeholder="Ex: Pense à prendre du lait..."
               placeholderTextColor="#666"
               multiline
             />
@@ -227,8 +233,8 @@ export default function RemindersScreen() {
                 <Text style={styles.modalButtonText}>Enregistrer</Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </Modal>
     </KeyboardAvoidingView>
   );

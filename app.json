@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "scheme": "com.jarvis.app",
+    "icon": "./assets/images/icon.png",
     "android": {
       "package": "com.jarvis.app",
       "googleServicesFile": "./google-services.json"

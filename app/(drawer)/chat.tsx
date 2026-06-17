@@ -10,7 +10,7 @@ import {
   Alert,
   Platform,
   KeyboardAvoidingView,
-  Image, // 👈 Import ajouté pour l'image
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
@@ -106,19 +106,22 @@ export default function ChatScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
-      {/* En‑tête avec image et titre */}
+      {/* En‑tête avec logo + titre */}
       <View style={styles.header}>
-        <Image
-          source={require('../../assets/Jarvis.png')}
-          style={styles.headerIcon}
-        />
-        <Text style={styles.headerTitle}>JARVIS</Text>
+        <View style={styles.headerRow}>
+          <Image
+            source={require('../../assets/Jarvis.png')}
+            style={styles.headerIcon}
+          />
+          <Text style={styles.headerTitle}>JARVIS</Text>
+        </View>
       </View>
 
+      {/* Bannière d'accueil (disparait après premier message) */}
       {showBanner && (
         <View style={styles.banner}>
           <Text style={styles.bannerText}>
-            Salutations, je suis JARVIS, votre assistant IA. Comment puis-je vous aider ?
+            Bonjour ! Je suis JARVIS, votre assistant intelligent. Posez-moi vos questions, je suis là pour vous aider.
           </Text>
         </View>
       )}
@@ -132,7 +135,10 @@ export default function ChatScreen() {
         {messages.map((msg, idx) => (
           <View
             key={idx}
-            style={[styles.messageBubble, msg.isUser ? styles.userBubble : styles.assistantBubble]}
+            style={[
+              styles.messageBubble,
+              msg.isUser ? styles.userBubble : styles.assistantBubble,
+            ]}
           >
             <Text style={msg.isUser ? styles.userText : styles.assistantText}>{msg.text}</Text>
           </View>
@@ -199,24 +205,27 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A0A' },
   header: {
-    paddingVertical: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 8,
     backgroundColor: '#0A0A0A',
     borderBottomWidth: 1,
     borderBottomColor: '#1F1F1F',
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   headerIcon: {
-    width: 50,
-    height: 50,
+    width: 30,
+    height: 30,
     resizeMode: 'contain',
+    marginRight: 8,
   },
   headerTitle: {
     fontSize: 18,
     color: '#E5E5E5',
     fontWeight: 'bold',
     letterSpacing: 4,
-    marginTop: 4,
   },
   banner: {
     backgroundColor: '#161616',
@@ -238,19 +247,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginVertical: 4,
     borderRadius: 16,
-    maxWidth: '82%',
+    maxWidth: '100%',
   },
   userBubble: {
     backgroundColor: '#2C2C2C',
     alignSelf: 'flex-end',
     borderBottomRightRadius: 4,
+    maxWidth: '75%',
   },
   assistantBubble: {
     backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#2A2A2A',
     alignSelf: 'flex-start',
-    borderBottomLeftRadius: 4,
+    maxWidth: '100%',
   },
   userText: { color: '#E5E5E5', fontSize: 15, lineHeight: 21 },
   assistantText: { color: '#F5F5F5', fontSize: 15, lineHeight: 21 },
