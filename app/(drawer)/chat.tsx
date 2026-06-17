@@ -10,6 +10,7 @@ import {
   Alert,
   Platform,
   KeyboardAvoidingView,
+  Image, // 👈 Import ajouté pour l'image
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
@@ -91,13 +92,11 @@ export default function ChatScreen() {
     }
   };
 
-  const toggleRecording = async () => {
-    if (isRecording) {
-      setIsRecording(false);
-      return;
+  const toggleRecording = () => {
+    setIsRecording(!isRecording);
+    if (!isRecording) {
+      Alert.alert('🎤 Enregistrement', 'L\'enregistrement vocal sera disponible prochainement.');
     }
-    setIsRecording(true);
-    Alert.alert('Info', 'La reconnaissance vocale sera implémentée prochainement.');
     setIsRecording(false);
   };
 
@@ -107,6 +106,15 @@ export default function ChatScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
+      {/* En‑tête avec image et titre */}
+      <View style={styles.header}>
+        <Image
+          source={require('../../assets/Jarvis.png')}
+          style={styles.headerIcon}
+        />
+        <Text style={styles.headerTitle}>JARVIS</Text>
+      </View>
+
       {showBanner && (
         <View style={styles.banner}>
           <Text style={styles.bannerText}>
@@ -133,15 +141,23 @@ export default function ChatScreen() {
       </ScrollView>
 
       <View style={styles.inputContainer}>
+        {/* Bouton + */}
         <TouchableOpacity
-          onPress={toggleRecording}
-          style={[styles.iconButton, isRecording && styles.iconButtonActive]}
+          onPress={() => {
+            Alert.alert(
+              'Ajouter',
+              'Choisissez une action',
+              [
+                { text: '📎 Ajouter un fichier', onPress: () => {} },
+                { text: '🌍 Traduire', onPress: () => {} },
+                { text: '📷 Prendre une photo', onPress: () => {} },
+                { text: 'Annuler', style: 'cancel' },
+              ]
+            );
+          }}
+          style={styles.iconButton}
         >
-          <Ionicons
-            name={isRecording ? 'mic' : 'mic-outline'}
-            size={20}
-            color={isRecording ? '#000' : '#E5E5E5'}
-          />
+          <Ionicons name="add" size={24} color="#E5E5E5" />
         </TouchableOpacity>
 
         <TextInput
@@ -152,6 +168,21 @@ export default function ChatScreen() {
           placeholderTextColor="#6B6B6B"
           multiline
         />
+
+        {/* Bouton enregistrement studio (cercle rouge) */}
+        <TouchableOpacity
+          onPress={toggleRecording}
+          style={[styles.iconButton, isRecording && styles.iconButtonActive]}
+        >
+          <View
+            style={{
+              width: 14,
+              height: 14,
+              borderRadius: 7,
+              backgroundColor: isRecording ? '#FF3B30' : '#E5E5E5',
+            }}
+          />
+        </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => sendMessage(message)}
@@ -167,6 +198,26 @@ export default function ChatScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A0A' },
+  header: {
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0A0A0A',
+    borderBottomWidth: 1,
+    borderBottomColor: '#1F1F1F',
+  },
+  headerIcon: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
+  },
+  headerTitle: {
+    fontSize: 18,
+    color: '#E5E5E5',
+    fontWeight: 'bold',
+    letterSpacing: 4,
+    marginTop: 4,
+  },
   banner: {
     backgroundColor: '#161616',
     paddingVertical: 14,
