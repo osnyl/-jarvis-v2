@@ -45,7 +45,6 @@ export default function AboutScreen() {
       <View style={styles.footer}>
         <Text style={styles.footerText}>Version 1.0.0</Text>
         <Text style={styles.footerText}>© 2026 Osnyl – Tous droits réservés.</Text>
-        <Text style={styles.footerEmoji}>Fait avec ❤️ et beaucoup de ☕ au Bénin</Text>
       </View>
     </ScrollView>
   );
@@ -117,11 +116,5 @@ const styles = StyleSheet.create({
   footerText: {
     color: '#6B6B6B',
     fontSize: 12,
-  },
-  footerEmoji: {
-    color: '#4A4A4A',
-    fontSize: 11,
-    marginTop: 8,
-    fontStyle: 'italic',
   },
 });
