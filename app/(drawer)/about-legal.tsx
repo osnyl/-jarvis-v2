@@ -7,7 +7,7 @@ export default function AboutLegalScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.replace('/about')} style={styles.backButton}>
           <Ionicons name="arrow-back" size={22} color="#E5E5E5" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mention légale</Text>

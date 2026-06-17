@@ -140,7 +140,7 @@ export default function ChatScreen() {
       <View style={styles.chatArea}>
         {showBanner && (
           <View style={styles.banner}>
-            <Ionicons name="sparkles" size={20} color="#FFD700" style={{ marginBottom: 8 }} />
+            <Ionicons name="sparkles" size={20} color="#D4D4D4" style={{ marginBottom: 8 }} />
             <Text style={styles.bannerText}>
               Bonjour ! Je suis JARVIS, votre assistant intelligent.{'\n'}Posez-moi vos questions, je suis là pour vous aider.
             </Text>
@@ -175,7 +175,7 @@ export default function ChatScreen() {
           ))}
           {loading && (
             <View style={styles.loaderRow}>
-              <ActivityIndicator color="#FFD700" size="small" />
+              <ActivityIndicator color="#D4D4D4" size="small" />
               <Text style={styles.loaderText}>Jarvis réfléchit...</Text>
             </View>
           )}
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
     borderWidth: 1,
-    borderColor: '#FFD700',
+    borderColor: '#D4D4D4',
   },
   headerIcon: {
     width: 24,
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 17,
-    color: '#FFD700',
+    color: '#D4D4D4',
     fontWeight: 'bold',
     letterSpacing: 3,
   },
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#FFD70033',
+    borderColor: '#D4D4D433',
     alignItems: 'center',
   },
   bannerText: {
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'flex-end', padding: 16, gap: 8 },
   userBubble: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#D4D4D4',
     alignSelf: 'flex-end',
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#FFD700',
+    backgroundColor: '#D4D4D4',
     justifyContent: 'center',
     alignItems: 'center',
   },
