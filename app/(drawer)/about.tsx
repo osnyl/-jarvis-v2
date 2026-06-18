@@ -15,7 +15,11 @@ export default function AboutScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+      {/* HEADER AVEC BOUTON RETOUR */}
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
         <View style={styles.logoCircle}>
           <Ionicons name="sparkles" size={32} color="#FFD700" />
         </View>
@@ -56,6 +60,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 32,
     paddingBottom: 24,
+    position: 'relative',
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    top: 32,
+    zIndex: 10,
   },
   logoCircle: {
     width: 72,

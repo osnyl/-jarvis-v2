@@ -21,6 +21,11 @@ export default function HomeScreen() {
           <Text style={styles.buttonText}>⚡ Contrôler votre dépense énergétique</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Lien En savoir plus */}
+      <TouchableOpacity onPress={() => router.push('/about-app')}>
+        <Text style={styles.footerLink}>En savoir plus</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -30,7 +35,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000', // fond noir
+    backgroundColor: '#000',
     padding: 20,
   },
   title: {
@@ -54,11 +59,17 @@ const styles = StyleSheet.create({
     borderColor: '#FFF',
   },
   energyButton: {
-    backgroundColor: '#FF9500', // orange
+    backgroundColor: '#FF9500',
   },
   buttonText: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: '600',
+  },
+  footerLink: {
+    color: '#FFD700',
+    fontSize: 14,
+    marginTop: 40,
+    textDecorationLine: 'underline',
   },
 });

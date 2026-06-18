@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Switch, TextInput, LayoutAnimation, Platform, UIManager } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  Switch,
+  TextInput,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import auth from '@react-native-firebase/auth';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import * as Updates from 'expo-updates';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -31,6 +45,37 @@ export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(true);
   const [secureNotifications, setSecureNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
+  const [isSpeechEnabled, setIsSpeechEnabled] = useState(true);
+  const [isMemoryEnabled, setIsMemoryEnabled] = useState(true);
+  const [memoryItems, setMemoryItems] = useState<{ key: string; value: string }[]>([]);
+
+  // Charger la mémoire depuis AsyncStorage
+  useEffect(() => {
+    loadMemory();
+  }, []);
+
+  const loadMemory = async () => {
+    try {
+      const stored = await AsyncStorage.getItem('memory');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const items = Object.entries(parsed).map(([key, value]) => ({ key, value: value as string }));
+        setMemoryItems(items);
+      }
+    } catch (e) {}
+  };
+
+  const deleteMemoryItem = async (key: string) => {
+    try {
+      const stored = await AsyncStorage.getItem('memory');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        delete parsed[key];
+        await AsyncStorage.setItem('memory', JSON.stringify(parsed));
+        setMemoryItems(Object.entries(parsed).map(([k, v]) => ({ key: k, value: v as string })));
+      }
+    } catch (e) {}
+  };
 
   const handleLogout = async () => {
     Alert.alert(
@@ -59,6 +104,32 @@ export default function SettingsScreen() {
     Alert.alert(title, 'Cette fonctionnalité sera disponible prochainement.');
   };
 
+  const checkForUpdates = async () => {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+      if (update.isAvailable) {
+        Alert.alert(
+          'Mise à jour disponible',
+          'Voulez-vous télécharger et installer la mise à jour ?',
+          [
+            { text: 'Plus tard', style: 'cancel' },
+            {
+              text: 'Installer',
+              onPress: async () => {
+                await Updates.fetchUpdateAsync();
+                await Updates.reloadAsync();
+              },
+            },
+          ]
+        );
+      } else {
+        Alert.alert('Aucune mise à jour', 'Vous utilisez déjà la dernière version.');
+      }
+    } catch (error) {
+      Alert.alert('Erreur', 'Impossible de vérifier les mises à jour.');
+    }
+  };
+
   const toggleSection = (id: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedSection(expandedSection === id ? null : id);
@@ -75,12 +146,57 @@ export default function SettingsScreen() {
       ],
     },
     {
+      id: 'audio',
+      title: 'Audio',
+      icon: 'volume-high-outline',
+      items: [
+        {
+          icon: 'volume-high-outline',
+          label: 'Synthèse vocale',
+          type: 'toggle',
+          action: () => setIsSpeechEnabled(!isSpeechEnabled),
+        },
+      ],
+    },
+    {
+      id: 'memory',
+      title: 'Mémoire',
+      icon: 'brain-outline',
+      items: [
+        {
+          icon: 'brain-outline',
+          label: 'Activer la mémoire',
+          type: 'toggle',
+          action: () => setIsMemoryEnabled(!isMemoryEnabled),
+        },
+      ],
+    },
+    {
+      id: 'personalization',
+      title: 'Personnalisation',
+      icon: 'color-palette-outline',
+      items: [
+        {
+          icon: 'color-palette-outline',
+          label: 'Personnalisation (à venir)',
+          type: 'action',
+          action: () => Alert.alert('Personnalisation', 'Cette fonctionnalité sera disponible prochainement.'),
+        },
+      ],
+    },
+    {
       id: 'general',
       title: 'Général',
       icon: 'settings-outline',
       items: [
         { icon: 'moon-outline', label: 'Mode sombre', type: 'toggle' },
         { icon: 'language-outline', label: 'Langue', type: 'value', value: 'Français' },
+        {
+          icon: 'cloud-upload-outline',
+          label: 'Vérifier les mises à jour',
+          type: 'action',
+          action: checkForUpdates,
+        },
       ],
     },
     {
@@ -112,8 +228,13 @@ export default function SettingsScreen() {
 
   const renderItemRight = (item: SettingItem) => {
     if (item.type === 'toggle') {
-      const value = item.label === 'Mode sombre' ? darkMode : item.label === 'Notifications' ? notifications : secureNotifications;
-      const setValue = item.label === 'Mode sombre' ? setDarkMode : item.label === 'Notifications' ? setNotifications : setSecureNotifications;
+      let value = false;
+      let setValue: (v: boolean) => void = () => {};
+      if (item.label === 'Mode sombre') { value = darkMode; setValue = setDarkMode; }
+      else if (item.label === 'Notifications') { value = notifications; setValue = setNotifications; }
+      else if (item.label === 'Notifications sécurisées') { value = secureNotifications; setValue = setSecureNotifications; }
+      else if (item.label === 'Synthèse vocale') { value = isSpeechEnabled; setValue = setIsSpeechEnabled; }
+      else if (item.label === 'Activer la mémoire') { value = isMemoryEnabled; setValue = setIsMemoryEnabled; }
       return (
         <Switch
           value={value}
@@ -137,10 +258,12 @@ export default function SettingsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
         <Text style={styles.headerTitle}>Paramètres</Text>
       </View>
 
-      {/* Barre de recherche */}
       <View style={styles.searchBar}>
         <Ionicons name="search" size={18} color="#6B6B6B" />
         <TextInput
@@ -207,6 +330,23 @@ export default function SettingsScreen() {
           );
         })}
 
+        {/* Section Mémoire (affichage des éléments retenus) */}
+        {isMemoryEnabled && memoryItems.length > 0 && (
+          <View style={styles.memoryCard}>
+            <Text style={styles.memoryTitle}>🧠 Jarvis retient :</Text>
+            {memoryItems.map((item) => (
+              <View key={item.key} style={styles.memoryItem}>
+                <Text style={styles.memoryText}>
+                  <Text style={styles.memoryKey}>{item.key}</Text> : {item.value}
+                </Text>
+                <TouchableOpacity onPress={() => deleteMemoryItem(item.key)}>
+                  <Ionicons name="trash-outline" size={16} color="#FF6B6B" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
+
         {!search.trim() && (
           <TouchableOpacity style={styles.logoutCard} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />
@@ -233,10 +373,46 @@ const styles = StyleSheet.create({
     borderBottomColor: '#1F1F1F',
   },
   headerTitle: {
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    top: 12,
+    zIndex: 10,
+  },
     fontSize: 18,
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    top: 12,
+    zIndex: 10,
+  },
     color: '#E5E5E5',
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    top: 12,
+    zIndex: 10,
+  },
     fontWeight: 'bold',
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    top: 12,
+    zIndex: 10,
+  },
     letterSpacing: 4,
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    top: 12,
+    zIndex: 10,
+  },
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    top: 12,
+    zIndex: 10,
   },
   searchBar: {
     flexDirection: 'row',
@@ -323,6 +499,36 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#1F1F1F',
     marginLeft: 46,
+  },
+  memoryCard: {
+    backgroundColor: '#141414',
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  memoryTitle: {
+    color: '#E5E5E5',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  memoryItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1F1F1F',
+  },
+  memoryText: {
+    color: '#A8A8A8',
+    fontSize: 13,
+  },
+  memoryKey: {
+    color: '#FFD700',
   },
   logoutCard: {
     flexDirection: 'row',

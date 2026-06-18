@@ -11,6 +11,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
@@ -55,6 +56,8 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+  const [isSpeechEnabled, setIsSpeechEnabled] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -104,7 +107,9 @@ export default function ChatScreen() {
       setMessages(newMessages);
       saveMessages(newMessages);
       
-      Speech.speak(reply, { language: 'fr', rate: 0.9 });
+      if (isSpeechEnabled) {
+        Speech.speak(reply, { language: 'fr', rate: 0.9 });
+      }
       
     } catch (error) {
       const errorMsg = 'Erreur de connexion au serveur.';
@@ -122,9 +127,39 @@ export default function ChatScreen() {
     setMessages(prev => prev.map((m, i) => i === idx ? { ...m, animated: true } : m));
   };
 
+  const toggleSpeech = () => {
+    setIsSpeechEnabled(!isSpeechEnabled);
+    Alert.alert(isSpeechEnabled ? '🔇 Audio désactivé' : '🔊 Audio activé');
+  };
+
+  const menuItems = [
+    { icon: '📷', label: 'Prendre une photo', action: () => Alert.alert('📷 Caméra', 'Fonctionnalité bientôt disponible') },
+    { icon: '🖼️', label: 'Choisir une photo', action: () => Alert.alert('🖼️ Galerie', 'Fonctionnalité bientôt disponible') },
+    { icon: '📁', label: 'Ajouter un fichier', action: () => Alert.alert('📁 Fichier', 'Fonctionnalité bientôt disponible') },
+    { icon: '✨', label: 'Générer une image', action: () => Alert.alert('✨ Image', 'Fonctionnalité bientôt disponible') },
+    { icon: '📄', label: 'Créer un brouillon', action: () => Alert.alert('📄 Brouillon', 'Fonctionnalité bientôt disponible') },
+    { icon: '🔬', label: 'Recherche approfondie', action: () => Alert.alert('🔬 Recherche', 'Fonctionnalité bientôt disponible') },
+    { icon: '🎙️', label: 'Créer un podcast', action: () => Alert.alert('🎙️ Podcast', 'Fonctionnalité bientôt disponible') },
+  ];
+
+  const renderMenuItem = (item: any, index: number) => (
+    <TouchableOpacity
+      key={index}
+      style={styles.menuItem}
+      onPress={() => {
+        setModalVisible(false);
+        item.action();
+      }}
+    >
+      <Text style={styles.menuIcon}>{item.icon}</Text>
+      <Text style={styles.menuLabel}>{item.label}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        {/* HEADER FIXE */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
             <DrawerToggleButton />
@@ -133,9 +168,17 @@ export default function ChatScreen() {
               style={styles.headerIcon}
             />
             <Text style={styles.headerTitle}>JARVIS</Text>
+            <TouchableOpacity onPress={toggleSpeech} style={styles.audioToggle}>
+              <Ionicons
+                name={isSpeechEnabled ? 'volume-high' : 'volume-mute'}
+                size={22}
+                color={isSpeechEnabled ? '#FFD700' : '#666'}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
+        {/* ZONE DE CHAT */}
         <View style={styles.chatArea}>
           {showBanner && (
             <View style={styles.banner}>
@@ -180,24 +223,14 @@ export default function ChatScreen() {
           </ScrollView>
         </View>
 
+        {/* BARRE DE SAISIE AVEC KEYBOARDAVOIDINGVIEW */}
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
           <View style={styles.inputContainer}>
             <TouchableOpacity
-              onPress={() => {
-                Alert.alert(
-                  'Ajouter',
-                  'Choisissez une action',
-                  [
-                    { text: '📎 Ajouter un fichier', onPress: () => {} },
-                    { text: '🌍 Traduire', onPress: () => {} },
-                    { text: '📷 Prendre une photo', onPress: () => {} },
-                    { text: 'Annuler', style: 'cancel' },
-                  ]
-                );
-              }}
+              onPress={() => setModalVisible(true)}
               style={styles.iconButton}
             >
               <Ionicons name="add" size={24} color="#E5E5E5" />
@@ -235,6 +268,26 @@ export default function ChatScreen() {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
+
+        {/* MODAL MENU + */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setModalVisible(false)}
+          >
+            <View style={styles.modalContent}>
+              <View style={styles.menuGrid}>
+                {menuItems.map(renderMenuItem)}
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </View>
     </SafeAreaView>
   );
@@ -269,6 +322,10 @@ const styles = StyleSheet.create({
     color: '#D4D4D4',
     fontWeight: 'bold',
     letterSpacing: 3,
+    flex: 1,
+  },
+  audioToggle: {
+    padding: 4,
   },
   chatArea: { flex: 1 },
   banner: {
@@ -350,5 +407,41 @@ const styles = StyleSheet.create({
   },
   sendButtonDisabled: {
     backgroundColor: '#3A3A3A',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#1A1A1A',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    paddingBottom: 30,
+  },
+  menuGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  menuItem: {
+    width: '30%',
+    alignItems: 'center',
+    paddingVertical: 12,
+    backgroundColor: '#141414',
+    borderRadius: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  menuIcon: {
+    fontSize: 28,
+    marginBottom: 4,
+  },
+  menuLabel: {
+    color: '#A8A8A8',
+    fontSize: 11,
+    textAlign: 'center',
   },
 });

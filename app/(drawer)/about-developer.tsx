@@ -53,11 +53,11 @@ export default function AboutDeveloperScreen() {
         <View style={styles.bioCard}>
           <Text style={styles.bioTitle}>À propos de moi</Text>
           <Text style={styles.bioText}>
-            Étudiant en L3 Électrotechnique à l'ENSET de Lokossa, passionné par
+            Étudiant en L2 Électrotechnique à l'ENSET de Lokossa, passionné par
             l'intelligence artificielle et l'innovation technologique. Jarvis
             est né de l'envie de créer un assistant accessible et utile pour
             la vie quotidienne, en alliant développement mobile, IA et
-            électrotechnique.
+            électrotechnique et ce projet deviendra grand.
           </Text>
         </View>
 

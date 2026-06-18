@@ -16,7 +16,7 @@ export default function DrawerLayout() {
         headerStyle: {
           backgroundColor: '#0A0A0A',
         },
-        headerTintColor: '#E5E5E5',
+        headerTintColor: '#FFD700', // 👈 Changé ici : bouton hamburger en orange doré
       }}
     >
       <Drawer.Screen

@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 const STORAGE_KEY = 'reminders';
@@ -26,6 +26,7 @@ interface Reminder {
 }
 
 export default function AddReminderScreen() {
+  const router = useRouter();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
@@ -64,6 +65,7 @@ export default function AddReminderScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      {/* HEADER FIXE */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#E5E5E5" />
@@ -71,6 +73,7 @@ export default function AddReminderScreen() {
         <Text style={styles.headerTitle}>Nouveau rappel</Text>
       </View>
 
+      {/* CONTENU DÉFILABLE */}
       <ScrollView
         contentContainerStyle={styles.form}
         keyboardShouldPersistTaps="handled"
@@ -116,6 +119,7 @@ export default function AddReminderScreen() {
         <View style={{ height: 40 }} />
       </ScrollView>
 
+      {/* BARRE FIXE EN BAS */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()}>
           <Text style={styles.cancelButtonText}>Annuler</Text>
@@ -135,12 +139,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 14,
+    backgroundColor: '#0A0A0A',
     borderBottomWidth: 1,
     borderBottomColor: '#1F1F1F',
   },
   backButton: { marginRight: 12 },
   headerTitle: { color: '#F5F5F5', fontSize: 18, fontWeight: 'bold' },
-  form: { padding: 20 },
+  form: { padding: 20, paddingBottom: 40 },
   label: { color: '#A8A8A8', fontSize: 14, marginBottom: 6, marginTop: 12 },
   input: {
     backgroundColor: '#141414',

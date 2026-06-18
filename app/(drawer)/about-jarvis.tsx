@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function AboutJarvisScreen() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.replace('/about')} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={22} color="#E5E5E5" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>C'est qui Jarvis ?</Text>
@@ -69,6 +71,14 @@ export default function AboutJarvisScreen() {
             <Ionicons name="shield-checkmark-outline" size={16} color="#A8A8A8" />
             <Text style={styles.featureText}>Protéger vos données avec un système sécurisé</Text>
           </View>
+        </View>
+
+        {/* Note importante */}
+        <View style={styles.noteCard}>
+          <Ionicons name="information-circle-outline" size={22} color="#FFD700" />
+          <Text style={styles.noteText}>
+            Jarvis est un projet étudiant en évolution progressive. Il ne remplace pas les grands modèles d'IA, mais il a été pensé avec une vision claire : rendre la technologie accessible et utile pour l'Afrique, et particulièrement pour le Bénin.
+          </Text>
         </View>
 
         <Text style={styles.quoteText}>
@@ -134,12 +144,28 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     flex: 1,
   },
+  noteCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    backgroundColor: '#141414',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  noteText: {
+    color: '#A8A8A8',
+    fontSize: 13,
+    lineHeight: 20,
+    flex: 1,
+  },
   quoteText: {
     color: '#E5E5E5',
     fontSize: 15,
     fontStyle: 'italic',
     textAlign: 'center',
-    marginTop: 16,
+    marginTop: 8,
     lineHeight: 22,
   },
 });
