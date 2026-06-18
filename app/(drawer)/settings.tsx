@@ -16,7 +16,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import auth from '@react-native-firebase/auth';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import * as Updates from 'expo-updates';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -49,7 +48,6 @@ export default function SettingsScreen() {
   const [isMemoryEnabled, setIsMemoryEnabled] = useState(true);
   const [memoryItems, setMemoryItems] = useState<{ key: string; value: string }[]>([]);
 
-  // Charger la mémoire depuis AsyncStorage
   useEffect(() => {
     loadMemory();
   }, []);
@@ -123,7 +121,7 @@ export default function SettingsScreen() {
           ]
         );
       } else {
-        Alert.alert('Aucune mise à jour', 'Vous utilisez déjà la dernière version.');
+        Alert.alert('Aucune mise à jour', 'Vous utilisez déjà la dernière版本.');
       }
     } catch (error) {
       Alert.alert('Erreur', 'Impossible de vérifier les mises à jour.');
@@ -258,9 +256,9 @@ export default function SettingsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Paramètres</Text>
       </View>
 
@@ -330,7 +328,6 @@ export default function SettingsScreen() {
           );
         })}
 
-        {/* Section Mémoire (affichage des éléments retenus) */}
         {isMemoryEnabled && memoryItems.length > 0 && (
           <View style={styles.memoryCard}>
             <Text style={styles.memoryTitle}>🧠 Jarvis retient :</Text>
@@ -365,54 +362,23 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A0A' },
   header: {
-    paddingVertical: 16,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     backgroundColor: '#0A0A0A',
     borderBottomWidth: 1,
     borderBottomColor: '#1F1F1F',
   },
+  backButton: {
+    padding: 4,
+    marginRight: 12,
+  },
   headerTitle: {
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    top: 12,
-    zIndex: 10,
-  },
     fontSize: 18,
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    top: 12,
-    zIndex: 10,
-  },
     color: '#E5E5E5',
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    top: 12,
-    zIndex: 10,
-  },
     fontWeight: 'bold',
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    top: 12,
-    zIndex: 10,
-  },
     letterSpacing: 4,
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    top: 12,
-    zIndex: 10,
-  },
-  },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    top: 12,
-    zIndex: 10,
   },
   searchBar: {
     flexDirection: 'row',
