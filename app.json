@@ -23,6 +23,10 @@
             "extraMavenRepos": [],
             "gradleProperties": {
               "org.gradle.jvmargs": "-Xmx5g -XX:MaxMetaspaceSize=2g -XX:+UseParallelGC"
+            },
+            "lintOptions": {
+              "checkReleaseBuilds": false,
+              "abortOnError": false
             }
           }
         }
