@@ -15,6 +15,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
+import { DrawerToggleButton } from '@react-navigation/drawer';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl ?? 'https://osnyl1403.pythonanywhere.com';
 const API_KEY = Constants.expoConfig?.extra?.apiKey ?? 'ta_cle_secrete';
@@ -126,127 +128,132 @@ export default function ChatScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* HEADER FIXE */}
-      <View style={styles.header}>
-        <View style={styles.headerRow}>
-          <Image
-            source={require('../../assets/Jarvis.png')}
-            style={styles.headerIcon}
-          />
-          <Text style={styles.headerTitle}>JARVIS</Text>
-        </View>
-      </View>
-
-      {/* ZONE DE CHAT (flexible) */}
-      <View style={styles.chatArea}>
-        {showBanner && (
-          <View style={styles.banner}>
-            <Text style={styles.bannerText}>
-              Bonjour ! Je suis JARVIS, votre assistant intelligent. Posez-moi vos questions, je suis là pour vous aider.
-            </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.headerRow}>
+            <DrawerToggleButton />
+            <Image
+              source={require('../../assets/Jarvis.png')}
+              style={styles.headerIcon}
+            />
+            <Text style={styles.headerTitle}>JARVIS</Text>
           </View>
-        )}
+        </View>
 
-        <ScrollView
-          ref={scrollRef}
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
-          keyboardShouldPersistTaps="handled"
-        >
-          {messages.map((msg, idx) => (
-            <View
-              key={idx}
-              style={msg.isUser ? styles.userBubble : styles.assistantBubble}
-            >
-              {!msg.isUser && !msg.animated ? (
-                <TypingText
-                  text={msg.text}
-                  style={styles.assistantText}
-                  onComplete={() => {
-                    markAnimated(idx);
-                    scrollRef.current?.scrollToEnd({ animated: true });
-                  }}
-                />
-              ) : (
-                <Text style={msg.isUser ? styles.userText : styles.assistantText}>{msg.text}</Text>
-              )}
-            </View>
-          ))}
-          {loading && (
-            <View style={styles.loaderRow}>
-              <ActivityIndicator color="#D4D4D4" size="small" />
-              <Text style={styles.loaderText}>Jarvis réfléchit...</Text>
+        <View style={styles.chatArea}>
+          {showBanner && (
+            <View style={styles.banner}>
+              <Text style={styles.bannerText}>
+                Bonjour ! Je suis JARVIS, votre assistant intelligent. Posez-moi vos questions, je suis là pour vous aider.
+              </Text>
             </View>
           )}
-        </ScrollView>
-      </View>
 
-      {/* BARRE DE SAISIE (remonte avec le clavier) */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
-        <View style={styles.inputContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              Alert.alert(
-                'Ajouter',
-                'Choisissez une action',
-                [
-                  { text: '📎 Ajouter un fichier', onPress: () => {} },
-                  { text: '🌍 Traduire', onPress: () => {} },
-                  { text: '📷 Prendre une photo', onPress: () => {} },
-                  { text: 'Annuler', style: 'cancel' },
-                ]
-              );
-            }}
-            style={styles.iconButton}
+          <ScrollView
+            ref={scrollRef}
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
+            keyboardShouldPersistTaps="handled"
           >
-            <Ionicons name="add" size={24} color="#E5E5E5" />
-          </TouchableOpacity>
-
-          <TextInput
-            style={styles.textInput}
-            value={message}
-            onChangeText={setMessage}
-            placeholder="Écrire un message..."
-            placeholderTextColor="#6B6B6B"
-            multiline
-          />
-
-          <TouchableOpacity
-            onPress={toggleRecording}
-            style={[styles.iconButton, isRecording && styles.iconButtonActive]}
-          >
-            <View
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: 7,
-                backgroundColor: isRecording ? '#FF3B30' : '#E5E5E5',
-              }}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => sendMessage(message)}
-            disabled={loading || !message.trim()}
-            style={[styles.sendButton, (!message.trim() || loading) && styles.sendButtonDisabled]}
-          >
-            <Ionicons name="arrow-up" size={20} color="#000" />
-          </TouchableOpacity>
+            {messages.map((msg, idx) => (
+              <View
+                key={idx}
+                style={msg.isUser ? styles.userBubble : styles.assistantBubble}
+              >
+                {!msg.isUser && !msg.animated ? (
+                  <TypingText
+                    text={msg.text}
+                    style={styles.assistantText}
+                    onComplete={() => {
+                      markAnimated(idx);
+                      scrollRef.current?.scrollToEnd({ animated: true });
+                    }}
+                  />
+                ) : (
+                  <Text style={msg.isUser ? styles.userText : styles.assistantText}>{msg.text}</Text>
+                )}
+              </View>
+            ))}
+            {loading && (
+              <View style={styles.loaderRow}>
+                <ActivityIndicator color="#D4D4D4" size="small" />
+                <Text style={styles.loaderText}>Jarvis réfléchit...</Text>
+              </View>
+            )}
+          </ScrollView>
         </View>
-      </KeyboardAvoidingView>
-    </View>
+
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        >
+          <View style={styles.inputContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  'Ajouter',
+                  'Choisissez une action',
+                  [
+                    { text: '📎 Ajouter un fichier', onPress: () => {} },
+                    { text: '🌍 Traduire', onPress: () => {} },
+                    { text: '📷 Prendre une photo', onPress: () => {} },
+                    { text: 'Annuler', style: 'cancel' },
+                  ]
+                );
+              }}
+              style={styles.iconButton}
+            >
+              <Ionicons name="add" size={24} color="#E5E5E5" />
+            </TouchableOpacity>
+
+            <TextInput
+              style={styles.textInput}
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Écrire un message..."
+              placeholderTextColor="#6B6B6B"
+              multiline
+            />
+
+            <TouchableOpacity
+              onPress={toggleRecording}
+              style={[styles.iconButton, isRecording && styles.iconButtonActive]}
+            >
+              <View
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: 7,
+                  backgroundColor: isRecording ? '#FF3B30' : '#E5E5E5',
+                }}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => sendMessage(message)}
+              disabled={loading || !message.trim()}
+              style={[styles.sendButton, (!message.trim() || loading) && styles.sendButtonDisabled]}
+            >
+              <Ionicons name="arrow-up" size={20} color="#000" />
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#0A0A0A',
+  },
   container: { flex: 1, backgroundColor: '#0A0A0A' },
   header: {
-    paddingVertical: 12,
+    paddingTop: 8,
+    paddingBottom: 12,
     paddingHorizontal: 16,
     backgroundColor: '#0A0A0A',
     borderBottomWidth: 1,
@@ -255,7 +262,6 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
   },
   headerIcon: {
     width: 32,
