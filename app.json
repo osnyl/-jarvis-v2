@@ -15,8 +15,7 @@
     "plugins": [
       "expo-router",
       "@react-native-firebase/app",
-      "@react-native-firebase/auth",
-      "expo-audio"
+      "@react-native-firebase/auth"
     ],
     "updates": {
       "url": "https://u.expo.dev/de74ad87-a2bc-4855-a977-254c1711388f"
