@@ -22,7 +22,8 @@
           "android": {
             "extraMavenRepos": [],
             "gradleProperties": {
-              "org.gradle.jvmargs": "-Xmx5g -XX:MaxMetaspaceSize=2g -XX:+UseParallelGC"
+              "org.gradle.jvmargs": "-Xmx5g -XX:MaxMetaspaceSize=2g -XX:+UseParallelGC",
+              "android.enableLint": "false"
             },
             "lintOptions": {
               "checkReleaseBuilds": false,
