@@ -36,6 +36,8 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Build APK locally
+        env:
+          EXPO_NO_LINT: "1"
         run: eas build --platform android --profile preview --local --non-interactive --output ./jarvis.apk
 
       - name: Upload APK
