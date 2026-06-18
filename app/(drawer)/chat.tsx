@@ -1,3 +1,4 @@
+import * as Speech from "expo-speech";
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
