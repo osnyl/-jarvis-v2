@@ -1,6 +1,9 @@
 import * as Speech from "expo-speech";
+import { Audio } from "expo-audio";
 import React, { useState, useEffect, useRef } from 'react';
+import { Audio } from "expo-audio";
 import {
+import { Audio } from "expo-audio";
   View,
   Text,
   TextInput,
@@ -14,10 +17,15 @@ import {
   Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Audio } from "expo-audio";
 import Constants from 'expo-constants';
+import { Audio } from "expo-audio";
 import { Ionicons } from '@expo/vector-icons';
+import { Audio } from "expo-audio";
 import { DrawerToggleButton } from 'expo-router/drawer';
+import { Audio } from "expo-audio";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Audio } from "expo-audio";
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl ?? 'https://osnyl1403.pythonanywhere.com';
 const API_KEY = Constants.expoConfig?.extra?.apiKey ?? 'ta_cle_secrete';
@@ -45,6 +53,70 @@ function TypingText({ text, style, onComplete }: { text: string; style: any; onC
       }
     }, 15);
     return () => clearInterval(interval);
+const startRecording = async () => {
+  try {
+    const { status } = await Audio.requestPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Permission refusée", "Autorise le microphone pour enregistrer.");
+      return;
+    }
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: true,
+      playsInSilentModeIOS: true,
+    });
+    const { recording } = await Audio.Recording.createAsync(
+      Audio.RecordingOptionsPresets.HIGH_QUALITY
+    );
+    setRecording(recording);
+    setIsRecording(true);
+  } catch (err) {
+    console.error("Erreur enregistrement:", err);
+    Alert.alert("Erreur", "Impossible de démarrer l'enregistrement.");
+  }
+};
+
+const stopRecording = async () => {
+  if (!recording) return;
+  try {
+    await recording.stopAndUnloadAsync();
+    const uri = recording.getURI();
+    setRecording(null);
+    setIsRecording(false);
+    if (uri) {
+      await sendAudioToServer(uri);
+    }
+  } catch (err) {
+    console.error("Erreur arrêt enregistrement:", err);
+    Alert.alert("Erreur", "Impossible d'arrêter l'enregistrement.");
+  }
+};
+
+const sendAudioToServer = async (uri) => {
+  try {
+    const formData = new FormData();
+    formData.append("audio", {
+      uri: uri,
+      type: "audio/wav",
+      name: "recording.wav",
+    });
+    const response = await fetch(`${API_URL}/transcribe`, {
+      method: "POST",
+      headers: {
+        "X-API-Key": API_KEY,
+      },
+      body: formData,
+    });
+    const data = await response.json();
+    if (data.text) {
+      sendMessage(data.text);
+    } else {
+      Alert.alert("Erreur", "Je n'ai pas compris votre message.");
+    }
+  } catch (error) {
+    console.error("Erreur envoi audio:", error);
+    Alert.alert("Erreur", "Impossible d'envoyer l'audio.");
+  }
+};
   }, [text]);
 
   return <Text style={style}>{displayedText}</Text>;
@@ -54,8 +126,9 @@ export default function ChatScreen() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+const [isRecording, setIsRecording] = useState(false);
+const [recording, setRecording] = useState(null);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -121,6 +194,12 @@ export default function ChatScreen() {
   };
 
   const toggleRecording = () => {
+  if (isRecording) {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+};
     setIsRecording(!isRecording);
     if (!isRecording) {
       Alert.alert('🎤 Enregistrement', "L'enregistrement vocal sera disponible prochainement.");
@@ -129,6 +208,70 @@ export default function ChatScreen() {
   };
 
   return (
+const startRecording = async () => {
+  try {
+    const { status } = await Audio.requestPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Permission refusée", "Autorise le microphone pour enregistrer.");
+      return;
+    }
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: true,
+      playsInSilentModeIOS: true,
+    });
+    const { recording } = await Audio.Recording.createAsync(
+      Audio.RecordingOptionsPresets.HIGH_QUALITY
+    );
+    setRecording(recording);
+    setIsRecording(true);
+  } catch (err) {
+    console.error("Erreur enregistrement:", err);
+    Alert.alert("Erreur", "Impossible de démarrer l'enregistrement.");
+  }
+};
+
+const stopRecording = async () => {
+  if (!recording) return;
+  try {
+    await recording.stopAndUnloadAsync();
+    const uri = recording.getURI();
+    setRecording(null);
+    setIsRecording(false);
+    if (uri) {
+      await sendAudioToServer(uri);
+    }
+  } catch (err) {
+    console.error("Erreur arrêt enregistrement:", err);
+    Alert.alert("Erreur", "Impossible d'arrêter l'enregistrement.");
+  }
+};
+
+const sendAudioToServer = async (uri) => {
+  try {
+    const formData = new FormData();
+    formData.append("audio", {
+      uri: uri,
+      type: "audio/wav",
+      name: "recording.wav",
+    });
+    const response = await fetch(`${API_URL}/transcribe`, {
+      method: "POST",
+      headers: {
+        "X-API-Key": API_KEY,
+      },
+      body: formData,
+    });
+    const data = await response.json();
+    if (data.text) {
+      sendMessage(data.text);
+    } else {
+      Alert.alert("Erreur", "Je n'ai pas compris votre message.");
+    }
+  } catch (error) {
+    console.error("Erreur envoi audio:", error);
+    Alert.alert("Erreur", "Impossible d'envoyer l'audio.");
+  }
+};
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
