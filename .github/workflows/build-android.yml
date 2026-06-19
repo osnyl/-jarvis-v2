@@ -42,13 +42,6 @@ jobs:
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/jarvis-release.keystore
       - name: Configure signing
         run: |
-          cat >> android/gradle.properties << EOF
-          MYAPP_RELEASE_STORE_FILE=jarvis-release.keystore
-          MYAPP_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }}
-          MYAPP_RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}
-          MYAPP_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
-          EOF
-
           python3 << 'PYEOF'
           import re
 
@@ -57,10 +50,10 @@ jobs:
 
           signing_block = """signingConfigs {
               release {
-                  storeFile file(MYAPP_RELEASE_STORE_FILE)
-                  storePassword MYAPP_RELEASE_STORE_PASSWORD
-                  keyAlias MYAPP_RELEASE_KEY_ALIAS
-                  keyPassword MYAPP_RELEASE_KEY_PASSWORD
+                  storeFile file('jarvis-release.keystore')
+                  storePassword System.getenv("MYAPP_RELEASE_STORE_PASSWORD")
+                  keyAlias System.getenv("MYAPP_RELEASE_KEY_ALIAS")
+                  keyPassword System.getenv("MYAPP_RELEASE_KEY_PASSWORD")
               }
           """
 
@@ -74,6 +67,10 @@ jobs:
           echo '--- Vérification du build.gradle ---'
           grep -A 10 'signingConfigs' android/app/build.gradle
       - name: Build APK
+        env:
+          MYAPP_RELEASE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          MYAPP_RELEASE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          MYAPP_RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           cd android
           ./gradlew assembleRelease --max-workers=2 --no-daemon
