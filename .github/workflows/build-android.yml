@@ -63,9 +63,6 @@ jobs:
           with open('android/app/build.gradle', 'w') as f:
               f.write(content)
           PYEOF
-
-          echo '--- Vérification du build.gradle ---'
-          grep -A 10 'signingConfigs' android/app/build.gradle
       - name: Build APK
         env:
           MYAPP_RELEASE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -79,3 +76,11 @@ jobs:
         with:
           name: jarvis-apk
           path: android/app/build/outputs/apk/release/*.apk
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Jarvis APK Build ${{ github.run_number }}
+          files: android/app/build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
