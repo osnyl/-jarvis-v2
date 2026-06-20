@@ -1,22 +1,29 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AboutGithubScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={22} color="#E5E5E5" />
+          <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>GitHub</Text>
+        <View style={styles.backButton} />
       </View>
 
       <View style={styles.content}>
-        <Ionicons name="logo-github" size={64} color="#FFD700" />
+        <View style={styles.iconBox}>
+          <Ionicons name="logo-github" size={56} color="#FFFFFF" />
+        </View>
         <Text style={styles.repoName}>osnyl/jarvis-v2</Text>
         <Text style={styles.repoDesc}>
           Code source de l'application Jarvis — Assistant IA personnel mobile
@@ -25,8 +32,9 @@ export default function AboutGithubScreen() {
         <TouchableOpacity
           style={styles.button}
           onPress={() => Linking.openURL('https://github.com/osnyl/-jarvis-v2')}
+          activeOpacity={0.8}
         >
-          <Ionicons name="open-outline" size={18} color="#0A0A0A" />
+          <Ionicons name="open-outline" size={18} color="#000000" />
           <Text style={styles.buttonText}>Voir sur GitHub</Text>
         </TouchableOpacity>
       </View>
@@ -35,29 +43,76 @@ export default function AboutGithubScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A0A' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#000000' 
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#1F1F1F',
+    borderBottomColor: '#1A1A1A',
   },
-  backButton: { marginRight: 12 },
-  headerTitle: { color: '#F5F5F5', fontSize: 17, fontWeight: 'bold' },
-  content: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 30 },
-  repoName: { color: '#F5F5F5', fontSize: 18, fontWeight: 'bold', marginTop: 16 },
-  repoDesc: { color: '#A8A8A8', fontSize: 13, textAlign: 'center', marginTop: 8, lineHeight: 19 },
+  backButton: { 
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: { 
+    color: '#FFFFFF', 
+    fontSize: 17, 
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  content: { 
+    flex: 1, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    padding: 30 
+  },
+  iconBox: {
+    width: 100,
+    height: 100,
+    borderRadius: 24,
+    backgroundColor: '#111111',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#1A1A1A',
+    marginBottom: 8,
+  },
+  repoName: { 
+    color: '#FFFFFF', 
+    fontSize: 18, 
+    fontWeight: '700', 
+    marginTop: 16,
+    letterSpacing: 0.5,
+  },
+  repoDesc: { 
+    color: '#888888', 
+    fontSize: 14, 
+    textAlign: 'center', 
+    marginTop: 10, 
+    lineHeight: 20,
+    maxWidth: 280,
+  },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: '#FFD700',
-    paddingHorizontal: 24,
+    gap: 10,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 28,
     paddingVertical: 14,
     borderRadius: 12,
-    marginTop: 24,
+    marginTop: 32,
   },
-  buttonText: { color: '#0A0A0A', fontWeight: '700', fontSize: 14 },
+  buttonText: { 
+    color: '#000000', 
+    fontWeight: '600', 
+    fontSize: 15,
+  },
 });

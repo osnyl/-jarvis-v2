@@ -1,101 +1,132 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AboutScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const aboutItems = [
     { icon: 'sparkles-outline', label: "C'est qui Jarvis ?", route: '/about-jarvis' },
-    { icon: 'person-circle-outline', label: 'Identité du développeur', route: '/about-developer' },
+    { icon: 'person-circle-outline', label: 'Identite du developpeur', route: '/about-developer' },
     { icon: 'logo-github', label: 'GitHub', route: '/about-github' },
-    { icon: 'document-text-outline', label: 'Mention légale', route: '/about-legal' },
+    { icon: 'document-text-outline', label: 'Mention legale', route: '/about-legal' },
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      {/* HEADER AVEC BOUTON RETOUR */}
-      <View style={styles.header}>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
         </TouchableOpacity>
-        <View style={styles.logoCircle}>
-          <Ionicons name="sparkles" size={32} color="#FFD700" />
+        <Text style={styles.headerTitle}>A propos</Text>
+        <View style={styles.backButton} />
+      </View>
+
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.hero}>
+          <View style={styles.logoCircle}>
+            <Ionicons name="sparkles" size={32} color="#FFFFFF" />
+          </View>
+          <Text style={styles.heroTitle}>JARVIS</Text>
+          <Text style={styles.heroSubtitle}>Votre assistant IA personnel</Text>
         </View>
-        <Text style={styles.headerTitle}>JARVIS</Text>
-        <Text style={styles.headerSubtitle}>Votre assistant IA personnel</Text>
-      </View>
 
-      <View style={styles.card}>
-        {aboutItems.map((item, idx) => (
-          <React.Fragment key={idx}>
-            <TouchableOpacity
-              style={styles.item}
-              onPress={() => router.push(item.route as any)}
-              activeOpacity={0.6}
-            >
-              <View style={styles.itemLeft}>
-                <Ionicons name={item.icon as any} size={20} color="#FFD700" />
-                <Text style={styles.itemText}>{item.label}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color="#6B6B6B" />
-            </TouchableOpacity>
-            {idx < aboutItems.length - 1 && <View style={styles.divider} />}
-          </React.Fragment>
-        ))}
-      </View>
+        <View style={styles.card}>
+          {aboutItems.map((item, idx) => (
+            <React.Fragment key={idx}>
+              <TouchableOpacity
+                style={styles.item}
+                onPress={() => router.push(item.route as any)}
+                activeOpacity={0.6}
+              >
+                <View style={styles.itemLeft}>
+                  <View style={styles.iconBox}>
+                    <Ionicons name={item.icon as any} size={18} color="#FFFFFF" />
+                  </View>
+                  <Text style={styles.itemText}>{item.label}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color="#555555" />
+              </TouchableOpacity>
+              {idx < aboutItems.length - 1 && <View style={styles.divider} />}
+            </React.Fragment>
+          ))}
+        </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Version 1.0.0</Text>
-        <Text style={styles.footerText}>© 2026 Osnyl – Tous droits réservés.</Text>
-      </View>
-    </ScrollView>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Version 1.0.0</Text>
+          <Text style={styles.footerText}>2026 Osnyl  Tous droits reserves.</Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A0A' },
-  header: {
-    alignItems: 'center',
-    paddingTop: 32,
-    paddingBottom: 24,
-    position: 'relative',
+  container: { 
+    flex: 1, 
+    backgroundColor: '#000000' 
   },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    top: 32,
-    zIndex: 10,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1A1A1A',
+  },
+  backButton: { 
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: { 
+    color: '#FFFFFF', 
+    fontSize: 17, 
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  content: { 
+    paddingBottom: 40 
+  },
+  hero: {
+    alignItems: 'center',
+    paddingVertical: 32,
   },
   logoCircle: {
     width: 72,
     height: 72,
     borderRadius: 20,
-    backgroundColor: '#161616',
+    backgroundColor: '#111111',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#FFD700',
+    borderWidth: 1,
+    borderColor: '#1A1A1A',
     marginBottom: 12,
   },
-  headerTitle: {
-    color: '#FFD700',
-    fontSize: 24,
-    fontWeight: 'bold',
+  heroTitle: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    fontWeight: '700',
     letterSpacing: 4,
   },
-  headerSubtitle: {
-    color: '#A8A8A8',
+  heroSubtitle: {
+    color: '#888888',
     fontSize: 13,
     marginTop: 4,
   },
   card: {
-    backgroundColor: '#141414',
+    backgroundColor: '#111111',
     marginHorizontal: 16,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#2A2A2A',
+    borderColor: '#1A1A1A',
     overflow: 'hidden',
   },
   item: {
@@ -110,14 +141,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
   },
+  iconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: '#1A1A1A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
   itemText: {
-    color: '#E5E5E5',
+    color: '#FFFFFF',
     fontSize: 15,
   },
   divider: {
     height: 1,
-    backgroundColor: '#1F1F1F',
-    marginLeft: 52,
+    backgroundColor: '#1A1A1A',
+    marginLeft: 62,
   },
   footer: {
     marginTop: 28,
@@ -125,7 +166,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   footerText: {
-    color: '#6B6B6B',
+    color: '#444444',
     fontSize: 12,
   },
 });

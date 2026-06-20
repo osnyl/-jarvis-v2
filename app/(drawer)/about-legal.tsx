@@ -1,130 +1,203 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AboutLegalScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+
+  const sections = [
+    {
+      title: 'Propriete intellectuelle',
+      text: "L'application Jarvis, son code source, son design et son contenu sont la propriete exclusive de la startup Noelie et de son developpeur Osnyl. Toute reproduction non autorisee, totale ou partielle, est strictement interdite.",
+    },
+    {
+      title: 'Protection des donnees',
+      text: "Vos conversations avec Jarvis sont stockees localement sur votre appareil. Aucune donnee personnelle n'est vendue ou partagee avec des tiers. Les echanges avec le serveur sont proteges par une cle d'authentification securisee.",
+    },
+    {
+      title: 'Limitation de responsabilite',
+      text: "Jarvis fournit des informations a titre indicatif grace a l'intelligence artificielle. Bien que nous nous efforcions d'assurer la fiabilite des reponses, l'application ne saurait etre tenue responsable d'eventuelles erreurs ou decisions prises sur la base des reponses fournies.",
+    },
+    {
+      title: 'Disponibilite du service',
+      text: "Le service peut etre temporairement indisponible pour des raisons de maintenance ou de mise a jour. Nous nous efforcons de maintenir une disponibilite maximale.",
+    },
+    {
+      title: 'Contact',
+      text: "Pour toute question relative a ces mentions legales, vous pouvez contacter le developpeur a l'adresse suivante :",
+      email: 'sossoubiadjacharbel@gmail.com',
+    },
+  ];
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={22} color="#E5E5E5" />
+          <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Mentions légales</Text>
+        <Text style={styles.headerTitle}>Mentions legales</Text>
+        <View style={styles.backButton} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.warningCard}>
-          <Ionicons name="warning-outline" size={18} color="#FFD700" />
+          <View style={styles.warningIconBox}>
+            <Ionicons name="alert-circle-outline" size={20} color="#FFFFFF" />
+          </View>
           <Text style={styles.warningText}>
-            Ce projet est un prototype étudiant. Toute utilisation est sous la responsabilité de l'utilisateur.
+            Ce projet est un prototype etudiant. Toute utilisation est sous la responsabilite de l'utilisateur.
           </Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Propriété intellectuelle</Text>
-          <Text style={styles.sectionText}>
-            L'application Jarvis, son code source, son design et son contenu
-            sont la propriété exclusive de la startup Noelie et de son
-            développeur Osnyl. Toute reproduction non autorisée, totale ou
-            partielle, est strictement interdite.
-          </Text>
-        </View>
+        {sections.map((section, index) => (
+          <View key={index} style={styles.section}>
+            <View style={styles.sectionTitleRow}>
+              <View style={styles.sectionNumberBox}>
+                <Text style={styles.sectionNumber}>{String(index + 1).padStart(2, '0')}</Text>
+              </View>
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+            </View>
+            <Text style={styles.sectionText}>{section.text}</Text>
+            {section.email && (
+              <Text style={styles.emailText}>{section.email}</Text>
+            )}
+          </View>
+        ))}
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Protection des données</Text>
-          <Text style={styles.sectionText}>
-            Vos conversations avec Jarvis sont stockées localement sur votre
-            appareil. Aucune donnée personnelle n'est vendue ou partagée avec
-            des tiers. Les échanges avec le serveur sont protégés par une clé
-            d'authentification sécurisée.
-          </Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Limitation de responsabilité</Text>
-          <Text style={styles.sectionText}>
-            Jarvis fournit des informations à titre indicatif grâce à
-            l'intelligence artificielle. Bien que nous nous efforcions
-            d'assurer la fiabilité des réponses, l'application ne saurait être
-            tenue responsable d'éventuelles erreurs ou décisions prises sur la
-            base des réponses fournies.
-          </Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Disponibilité du service</Text>
-          <Text style={styles.sectionText}>
-            Le service peut être temporairement indisponible pour des raisons
-            de maintenance ou de mise à jour. Nous nous efforçons de
-            maintenir une disponibilité maximale.
-          </Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact</Text>
-          <Text style={styles.sectionText}>
-            Pour toute question relative à ces mentions légales, vous pouvez
-            contacter le développeur à l'adresse suivante :
-          </Text>
-          <Text style={styles.contactEmail}>sossoubiadjacharbel@gmail.com</Text>
-        </View>
-
-        <TouchableOpacity style={styles.acknowledgeButton}>
-          <Text style={styles.acknowledgeText}>J'ai pris connaissance des mentions légales</Text>
+        <TouchableOpacity style={styles.acknowledgeButton} activeOpacity={0.8}>
+          <Ionicons name="checkmark-circle-outline" size={18} color="#000000" />
+          <Text style={styles.acknowledgeText}>J'ai pris connaissance</Text>
         </TouchableOpacity>
 
-        <Text style={styles.dateText}>Dernière mise à jour : Juin 2026</Text>
+        <Text style={styles.dateText}>Derniere mise a jour : Juin 2026</Text>
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A0A' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#000000' 
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#1F1F1F',
+    borderBottomColor: '#1A1A1A',
   },
-  backButton: { marginRight: 12 },
-  headerTitle: { color: '#F5F5F5', fontSize: 17, fontWeight: 'bold' },
-  content: { padding: 20, paddingBottom: 40 },
+  backButton: { 
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: { 
+    color: '#FFFFFF', 
+    fontSize: 17, 
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  content: { 
+    padding: 20, 
+    paddingBottom: 40 
+  },
   warningCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    backgroundColor: '#111111',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#1A1A1A',
+  },
+  warningIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#1A1A1A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  warningText: { 
+    color: '#888888', 
+    fontSize: 13, 
+    flex: 1, 
+    lineHeight: 20 
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#141414',
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 20,
+    marginBottom: 8,
   },
-  warningText: { color: '#A8A8A8', fontSize: 13, flex: 1, lineHeight: 18 },
-  section: {
-    marginBottom: 16,
-  },
-  sectionTitle: { color: '#F5F5F5', fontSize: 15, fontWeight: '700', marginBottom: 6 },
-  sectionText: { color: '#A8A8A8', fontSize: 13, lineHeight: 20 },
-  contactEmail: { color: '#FFD700', fontSize: 13, marginTop: 4 },
-  acknowledgeButton: {
+  sectionNumberBox: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
     backgroundColor: '#1A1A1A',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#FFD700',
+    borderColor: '#2A2A2A',
+  },
+  sectionNumber: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  sectionTitle: { 
+    color: '#FFFFFF', 
+    fontSize: 15, 
+    fontWeight: '700' 
+  },
+  sectionText: { 
+    color: '#888888', 
+    fontSize: 14, 
+    lineHeight: 22,
+    paddingLeft: 38,
+  },
+  emailText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    marginTop: 6,
+    paddingLeft: 38,
+    textDecorationLine: 'underline',
+  },
+  acknowledgeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 14,
-    alignItems: 'center',
     marginTop: 8,
   },
-  acknowledgeText: { color: '#FFD700', fontSize: 14, fontWeight: '600' },
+  acknowledgeText: { 
+    color: '#000000', 
+    fontSize: 14, 
+    fontWeight: '600' 
+  },
   dateText: {
-    color: '#4A4A4A',
-    fontSize: 11,
+    color: '#444444',
+    fontSize: 12,
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 24,
   },
 });

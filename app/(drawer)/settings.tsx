@@ -11,7 +11,9 @@ import {
   LayoutAnimation,
   Platform,
   UIManager,
+  StatusBar,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import auth from '@react-native-firebase/auth';
@@ -39,6 +41,7 @@ interface Section {
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
   const [expandedSection, setExpandedSection] = useState<string | null>('general');
   const [notifications, setNotifications] = useState(true);
@@ -77,12 +80,12 @@ export default function SettingsScreen() {
 
   const handleLogout = async () => {
     Alert.alert(
-      'Déconnexion',
-      'Voulez-vous vraiment vous déconnecter ?',
+      'Deconnexion',
+      'Voulez-vous vraiment vous deconnecter ?',
       [
         { text: 'Annuler', style: 'cancel' },
         {
-          text: 'Se déconnecter',
+          text: 'Se deconnecter',
           style: 'destructive',
           onPress: async () => {
             try {
@@ -90,7 +93,7 @@ export default function SettingsScreen() {
               await AsyncStorage.clear();
               router.replace('/login');
             } catch (error) {
-              Alert.alert('Erreur', 'Impossible de se déconnecter.');
+              Alert.alert('Erreur', 'Impossible de se deconnecter.');
             }
           },
         },
@@ -99,7 +102,7 @@ export default function SettingsScreen() {
   };
 
   const showComingSoon = (title: string) => {
-    Alert.alert(title, 'Cette fonctionnalité sera disponible prochainement.');
+    Alert.alert(title, 'Cette fonctionnalite sera disponible prochainement.');
   };
 
   const checkForUpdates = async () => {
@@ -107,8 +110,8 @@ export default function SettingsScreen() {
       const update = await Updates.checkForUpdateAsync();
       if (update.isAvailable) {
         Alert.alert(
-          'Mise à jour disponible',
-          'Voulez-vous télécharger et installer la mise à jour ?',
+          'Mise a jour disponible',
+          'Voulez-vous telecharger et installer la mise a jour ?',
           [
             { text: 'Plus tard', style: 'cancel' },
             {
@@ -121,10 +124,10 @@ export default function SettingsScreen() {
           ]
         );
       } else {
-        Alert.alert('Aucune mise à jour', 'Vous utilisez déjà la dernière版本.');
+        Alert.alert('Aucune mise a jour', 'Vous utilisez deja la derniere version.');
       }
     } catch (error) {
-      Alert.alert('Erreur', 'Impossible de vérifier les mises à jour.');
+      Alert.alert('Erreur', 'Impossible de verifier les mises a jour.');
     }
   };
 
@@ -140,7 +143,7 @@ export default function SettingsScreen() {
       icon: 'compass-outline',
       items: [
         { icon: 'home-outline', label: 'Accueil', type: 'navigate', action: () => router.push('/home') },
-        { icon: 'flash-outline', label: 'Délesteur', type: 'navigate', action: () => router.push('/energy') },
+        { icon: 'flash-outline', label: 'Delesteur', type: 'navigate', action: () => router.push('/energy') },
       ],
     },
     {
@@ -150,7 +153,7 @@ export default function SettingsScreen() {
       items: [
         {
           icon: 'volume-high-outline',
-          label: 'Synthèse vocale',
+          label: 'Synthese vocale',
           type: 'toggle',
           action: () => setIsSpeechEnabled(!isSpeechEnabled),
         },
@@ -158,12 +161,12 @@ export default function SettingsScreen() {
     },
     {
       id: 'memory',
-      title: 'Mémoire',
+      title: 'Memoire',
       icon: 'brain-outline',
       items: [
         {
           icon: 'brain-outline',
-          label: 'Activer la mémoire',
+          label: 'Activer la memoire',
           type: 'toggle',
           action: () => setIsMemoryEnabled(!isMemoryEnabled),
         },
@@ -176,22 +179,22 @@ export default function SettingsScreen() {
       items: [
         {
           icon: 'color-palette-outline',
-          label: 'Personnalisation (à venir)',
+          label: 'Personnalisation (a venir)',
           type: 'action',
-          action: () => Alert.alert('Personnalisation', 'Cette fonctionnalité sera disponible prochainement.'),
+          action: () => Alert.alert('Personnalisation', 'Cette fonctionnalite sera disponible prochainement.'),
         },
       ],
     },
     {
       id: 'general',
-      title: 'Général',
+      title: 'General',
       icon: 'settings-outline',
       items: [
         { icon: 'moon-outline', label: 'Mode sombre', type: 'toggle' },
-        { icon: 'language-outline', label: 'Langue', type: 'value', value: 'Français' },
+        { icon: 'language-outline', label: 'Langue', type: 'value', value: 'Francais' },
         {
           icon: 'cloud-upload-outline',
-          label: 'Vérifier les mises à jour',
+          label: 'Verifier les mises a jour',
           type: 'action',
           action: checkForUpdates,
         },
@@ -203,7 +206,7 @@ export default function SettingsScreen() {
       icon: 'notifications-outline',
       items: [
         { icon: 'notifications-outline', label: 'Notifications', type: 'toggle' },
-        { icon: 'shield-checkmark-outline', label: 'Notifications sécurisées', type: 'toggle' },
+        { icon: 'shield-checkmark-outline', label: 'Notifications securisees', type: 'toggle' },
       ],
     },
     {
@@ -211,8 +214,8 @@ export default function SettingsScreen() {
       title: 'Compte',
       icon: 'person-outline',
       items: [
-        { icon: 'stats-chart-outline', label: 'Crédit consommé', type: 'action', action: () => showComingSoon('Crédit consommé') },
-        { icon: 'lock-closed-outline', label: 'Confidentialité', type: 'action', action: () => showComingSoon('Confidentialité') },
+        { icon: 'stats-chart-outline', label: 'Credit consomme', type: 'action', action: () => showComingSoon('Credit consomme') },
+        { icon: 'lock-closed-outline', label: 'Confidentialite', type: 'action', action: () => showComingSoon('Confidentialite') },
       ],
     },
   ];
@@ -230,15 +233,15 @@ export default function SettingsScreen() {
       let setValue: (v: boolean) => void = () => {};
       if (item.label === 'Mode sombre') { value = darkMode; setValue = setDarkMode; }
       else if (item.label === 'Notifications') { value = notifications; setValue = setNotifications; }
-      else if (item.label === 'Notifications sécurisées') { value = secureNotifications; setValue = setSecureNotifications; }
-      else if (item.label === 'Synthèse vocale') { value = isSpeechEnabled; setValue = setIsSpeechEnabled; }
-      else if (item.label === 'Activer la mémoire') { value = isMemoryEnabled; setValue = setIsMemoryEnabled; }
+      else if (item.label === 'Notifications securisees') { value = secureNotifications; setValue = setSecureNotifications; }
+      else if (item.label === 'Synthese vocale') { value = isSpeechEnabled; setValue = setIsSpeechEnabled; }
+      else if (item.label === 'Activer la memoire') { value = isMemoryEnabled; setValue = setIsMemoryEnabled; }
       return (
         <Switch
           value={value}
           onValueChange={setValue}
-          trackColor={{ false: '#2A2A2A', true: '#FFD700' }}
-          thumbColor="#fff"
+          trackColor={{ false: '#2A2A2A', true: '#FFFFFF' }}
+          thumbColor={value ? '#000000' : '#888888'}
         />
       );
     }
@@ -246,34 +249,37 @@ export default function SettingsScreen() {
       return (
         <View style={styles.itemRight}>
           <Text style={styles.itemValue}>{item.value}</Text>
-          <Ionicons name="chevron-forward" size={16} color="#6B6B6B" />
+          <Ionicons name="chevron-forward" size={16} color="#555555" />
         </View>
       );
     }
-    return <Ionicons name="chevron-forward" size={16} color="#6B6B6B" />;
+    return <Ionicons name="chevron-forward" size={16} color="#555555" />;
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Paramètres</Text>
+        <Text style={styles.headerTitle}>Parametres</Text>
+        <View style={styles.backButton} />
       </View>
 
       <View style={styles.searchBar}>
-        <Ionicons name="search" size={18} color="#6B6B6B" />
+        <Ionicons name="search" size={18} color="#555555" />
         <TextInput
           style={styles.searchInput}
-          placeholder="Rechercher dans les paramètres..."
-          placeholderTextColor="#6B6B6B"
+          placeholder="Rechercher dans les parametres..."
+          placeholderTextColor="#555555"
           value={search}
           onChangeText={setSearch}
         />
         {search.length > 0 && (
           <TouchableOpacity onPress={() => setSearch('')}>
-            <Ionicons name="close-circle" size={18} color="#6B6B6B" />
+            <Ionicons name="close-circle" size={18} color="#555555" />
           </TouchableOpacity>
         )}
       </View>
@@ -290,7 +296,7 @@ export default function SettingsScreen() {
               >
                 <View style={styles.sectionHeaderLeft}>
                   <View style={styles.sectionIconBox}>
-                    <Ionicons name={section.icon as any} size={16} color="#FFD700" />
+                    <Ionicons name={section.icon as any} size={16} color="#FFFFFF" />
                   </View>
                   <Text style={styles.sectionHeaderTitle}>{section.title}</Text>
                 </View>
@@ -298,7 +304,7 @@ export default function SettingsScreen() {
                   <Ionicons
                     name={isExpanded ? 'chevron-up' : 'chevron-down'}
                     size={18}
-                    color="#6B6B6B"
+                    color="#555555"
                   />
                 )}
               </TouchableOpacity>
@@ -314,7 +320,7 @@ export default function SettingsScreen() {
                         activeOpacity={0.6}
                       >
                         <View style={styles.itemLeft}>
-                          <Ionicons name={item.icon as any} size={18} color="#E5E5E5" />
+                          <Ionicons name={item.icon as any} size={18} color="#FFFFFF" />
                           <Text style={styles.itemText}>{item.label}</Text>
                         </View>
                         {renderItemRight(item)}
@@ -330,14 +336,14 @@ export default function SettingsScreen() {
 
         {isMemoryEnabled && memoryItems.length > 0 && (
           <View style={styles.memoryCard}>
-            <Text style={styles.memoryTitle}>🧠 Jarvis retient :</Text>
+            <Text style={styles.memoryTitle}>Memoire de Jarvis</Text>
             {memoryItems.map((item) => (
               <View key={item.key} style={styles.memoryItem}>
                 <Text style={styles.memoryText}>
                   <Text style={styles.memoryKey}>{item.key}</Text> : {item.value}
                 </Text>
                 <TouchableOpacity onPress={() => deleteMemoryItem(item.key)}>
-                  <Ionicons name="trash-outline" size={16} color="#FF6B6B" />
+                  <Ionicons name="trash-outline" size={16} color="#FF4444" />
                 </TouchableOpacity>
               </View>
             ))}
@@ -345,9 +351,9 @@ export default function SettingsScreen() {
         )}
 
         {!search.trim() && (
-          <TouchableOpacity style={styles.logoutCard} onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />
-            <Text style={styles.logoutText}>Déconnexion</Text>
+          <TouchableOpacity style={styles.logoutCard} onPress={handleLogout} activeOpacity={0.8}>
+            <Ionicons name="log-out-outline" size={20} color="#FF4444" />
+            <Text style={styles.logoutText}>Deconnexion</Text>
           </TouchableOpacity>
         )}
 
@@ -360,43 +366,49 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A0A' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#000000' 
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    backgroundColor: '#0A0A0A',
+    paddingBottom: 12,
+    backgroundColor: '#000000',
     borderBottomWidth: 1,
-    borderBottomColor: '#1F1F1F',
+    borderBottomColor: '#1A1A1A',
   },
   backButton: {
-    padding: 4,
-    marginRight: 12,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: 18,
-    color: '#E5E5E5',
-    fontWeight: 'bold',
-    letterSpacing: 4,
+    color: '#FFFFFF',
+    fontWeight: '700',
+    letterSpacing: 2,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: '#141414',
+    gap: 10,
+    backgroundColor: '#111111',
     marginHorizontal: 16,
     marginTop: 16,
     marginBottom: 8,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#2A2A2A',
+    borderColor: '#1A1A1A',
   },
   searchInput: {
     flex: 1,
-    color: '#E5E5E5',
+    color: '#FFFFFF',
     fontSize: 14,
   },
   sectionWrapper: {
@@ -422,18 +434,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#FFD70033',
+    borderColor: '#2A2A2A',
   },
   sectionHeaderTitle: {
-    color: '#F5F5F5',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '600',
   },
   card: {
-    backgroundColor: '#141414',
+    backgroundColor: '#111111',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#2A2A2A',
+    borderColor: '#1A1A1A',
     overflow: 'hidden',
   },
   item: {
@@ -454,31 +466,31 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   itemText: {
-    color: '#E5E5E5',
+    color: '#FFFFFF',
     fontSize: 14,
   },
   itemValue: {
-    color: '#6B6B6B',
+    color: '#555555',
     fontSize: 13,
   },
   divider: {
     height: 1,
-    backgroundColor: '#1F1F1F',
+    backgroundColor: '#1A1A1A',
     marginLeft: 46,
   },
   memoryCard: {
-    backgroundColor: '#141414',
+    backgroundColor: '#111111',
     marginHorizontal: 16,
     marginTop: 16,
     padding: 16,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#2A2A2A',
+    borderColor: '#1A1A1A',
   },
   memoryTitle: {
-    color: '#E5E5E5',
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '700',
     marginBottom: 8,
   },
   memoryItem: {
@@ -487,30 +499,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#1F1F1F',
+    borderBottomColor: '#1A1A1A',
   },
   memoryText: {
-    color: '#A8A8A8',
+    color: '#888888',
     fontSize: 13,
   },
   memoryKey: {
-    color: '#FFD700',
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   logoutCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#1A1212',
+    backgroundColor: '#1A1111',
     marginHorizontal: 16,
     marginTop: 20,
     paddingVertical: 14,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#3A2020',
+    borderColor: '#2A1A1A',
   },
   logoutText: {
-    color: '#FF6B6B',
+    color: '#FF4444',
     fontSize: 15,
     fontWeight: '600',
   },
@@ -519,7 +532,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    color: '#6B6B6B',
+    color: '#444444',
     fontSize: 12,
   },
 });

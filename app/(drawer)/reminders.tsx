@@ -11,7 +11,10 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DrawerToggleButton } from 'expo-router/drawer';
 
 const STORAGE_KEY = 'reminders';
 
@@ -33,6 +36,8 @@ export default function RemindersScreen() {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     loadReminders();
@@ -72,7 +77,7 @@ export default function RemindersScreen() {
     setDescription('');
     setDate('');
     setTime('');
-    setConfirmMessage('N\'oubliez plus rien ! Jarvis veille sur vous. 😉');
+    setConfirmMessage('Rappel enregistre. Jarvis veille sur vous.');
     setTimeout(() => setConfirmMessage(''), 4000);
   };
 
@@ -86,7 +91,7 @@ export default function RemindersScreen() {
   const deleteReminder = (id: string) => {
     Alert.alert('Supprimer', 'Voulez-vous vraiment supprimer ce rappel ?', [
       { text: 'Annuler', style: 'cancel' },
-      { text: 'Supprimer', onPress: () => {
+      { text: 'Supprimer', style: 'destructive', onPress: () => {
         const updated = reminders.filter((r) => r.id !== id);
         saveReminders(updated);
       }},
@@ -96,23 +101,28 @@ export default function RemindersScreen() {
   const doneCount = reminders.filter((r) => r.done).length;
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      {/* En‑tête sans icône */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Rappels</Text>
+    <View style={styles.container}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+        <View style={styles.headerRow}>
+          <View style={styles.drawerButton}>
+            <DrawerToggleButton tintColor="#FFFFFF" />
+          </View>
+          <Text style={styles.headerTitle}>Rappels</Text>
+          <View style={styles.drawerButton} />
+        </View>
       </View>
 
-      <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-        <Text style={styles.addButtonText}>📝 Programmer un rappel</Text>
-        <Text style={styles.addButtonIcon}>＋</Text>
+      <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
+        <View style={styles.addButtonLeft}>
+          <Ionicons name="create-outline" size={20} color="#FFFFFF" />
+          <Text style={styles.addButtonText}>Programmer un rappel</Text>
+        </View>
+        <Ionicons name="add" size={24} color="#FFFFFF" />
       </TouchableOpacity>
 
       <View style={styles.welcomeCard}>
         <Text style={styles.welcomeText}>
-          Un bon planning est la clé de la réussite. Que voulez-vous programmer aujourd'hui ?
+          Un bon planning est la cle de la reussite. Que voulez-vous programmer aujourd'hui ?
         </Text>
       </View>
 
@@ -124,13 +134,17 @@ export default function RemindersScreen() {
             <View key={item.id} style={[styles.card, item.done && styles.cardDone]}>
               <Text style={[styles.cardName, item.done && styles.cardNameDone]}>{item.name}</Text>
               <Text style={styles.cardDescription}>{item.description}</Text>
-              <Text style={styles.cardDate}>📅 {item.date} à {item.time}</Text>
+              <Text style={styles.cardDate}>{item.date} a {item.time}</Text>
               <View style={styles.cardActions}>
                 <TouchableOpacity onPress={() => toggleDone(item.id)} style={styles.actionButton}>
-                  <Text style={styles.actionText}>{item.done ? '↩️' : '✅'}</Text>
+                  <Ionicons 
+                    name={item.done ? "refresh-outline" : "checkmark"} 
+                    size={20} 
+                    color={item.done ? "#888888" : "#4CAF50"} 
+                  />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => deleteReminder(item.id)} style={styles.actionButton}>
-                  <Text style={styles.actionText}>🗑️</Text>
+                  <Ionicons name="trash-outline" size={20} color="#FF4444" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -144,13 +158,12 @@ export default function RemindersScreen() {
         </View>
       )}
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
         <Text style={styles.footerText}>
-          {reminders.length} rappel{reminders.length > 1 && 's'} ({doneCount} fait{doneCount > 1 && 's'}, {reminders.length - doneCount} à faire)
+          {reminders.length} rappel{reminders.length > 1 && 's'} ({doneCount} fait{doneCount > 1 && 's'}, {reminders.length - doneCount} a faire)
         </Text>
       </View>
 
-      {/* Modal corrigé */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -173,7 +186,7 @@ export default function RemindersScreen() {
               value={name}
               onChangeText={setName}
               placeholder="Ex: Acheter du lait"
-              placeholderTextColor="#666"
+              placeholderTextColor="#666666"
             />
 
             <Text style={styles.label}>Description</Text>
@@ -181,8 +194,8 @@ export default function RemindersScreen() {
               style={[styles.input, styles.textArea]}
               value={description}
               onChangeText={setDescription}
-              placeholder="Ex: Pense à prendre du lait..."
-              placeholderTextColor="#666"
+              placeholder="Details du rappel..."
+              placeholderTextColor="#666666"
               multiline
             />
 
@@ -192,7 +205,7 @@ export default function RemindersScreen() {
               value={date}
               onChangeText={setDate}
               placeholder="JJ/MM/AAAA"
-              placeholderTextColor="#666"
+              placeholderTextColor="#666666"
             />
 
             <Text style={styles.label}>Heure</Text>
@@ -201,7 +214,7 @@ export default function RemindersScreen() {
               value={time}
               onChangeText={setTime}
               placeholder="HH:MM"
-              placeholderTextColor="#666"
+              placeholderTextColor="#666666"
             />
 
             <View style={styles.modalButtons}>
@@ -209,136 +222,231 @@ export default function RemindersScreen() {
                 style={[styles.modalButton, styles.modalButtonCancel]}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.modalButtonText}>Annuler</Text>
+                <Text style={styles.modalButtonTextCancel}>Annuler</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.modalButtonSave]}
                 onPress={addReminder}
               >
-                <Text style={styles.modalButtonText}>Enregistrer</Text>
+                <Text style={styles.modalButtonTextSave}>Enregistrer</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </Modal>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A0A' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#000000' 
+  },
   header: {
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#0A0A0A',
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    backgroundColor: '#000000',
     borderBottomWidth: 1,
-    borderBottomColor: '#1F1F1F',
+    borderBottomColor: '#1A1A1A',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  drawerButton: {
+    width: 40,
   },
   headerTitle: {
     fontSize: 18,
-    color: '#E5E5E5',
-    fontWeight: 'bold',
-    letterSpacing: 4,
+    color: '#FFFFFF',
+    fontWeight: '700',
+    letterSpacing: 2,
   },
   addButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#1A1A1A',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    backgroundColor: '#111111',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     marginHorizontal: 16,
-    marginTop: 12,
+    marginTop: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#2A2A2A',
+    borderColor: '#1A1A1A',
   },
-  addButtonText: { color: '#E5E5E5', fontSize: 15, fontWeight: '500' },
-  addButtonIcon: { color: '#E5E5E5', fontSize: 22, fontWeight: '300' },
+  addButtonLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  addButtonText: { 
+    color: '#FFFFFF', 
+    fontSize: 15, 
+    fontWeight: '500' 
+  },
   welcomeCard: {
-    backgroundColor: '#141414',
+    backgroundColor: '#111111',
     marginHorizontal: 16,
-    marginTop: 12,
-    padding: 14,
+    marginTop: 16,
+    padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#2A2A2A',
+    borderColor: '#1A1A1A',
   },
-  welcomeText: { color: '#A8A8A8', fontSize: 13, lineHeight: 19, textAlign: 'center' },
-  list: { flex: 1, marginTop: 12, paddingHorizontal: 16 },
-  emptyText: { color: '#6B6B6B', fontSize: 14, textAlign: 'center', marginTop: 20 },
+  welcomeText: { 
+    color: '#888888', 
+    fontSize: 14, 
+    lineHeight: 20, 
+    textAlign: 'center' 
+  },
+  list: { 
+    flex: 1, 
+    marginTop: 16, 
+    paddingHorizontal: 16 
+  },
+  emptyText: { 
+    color: '#555555', 
+    fontSize: 14, 
+    textAlign: 'center', 
+    marginTop: 40 
+  },
   card: {
-    backgroundColor: '#141414',
-    padding: 14,
+    backgroundColor: '#111111',
+    padding: 16,
     borderRadius: 12,
-    marginBottom: 10,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#2A2A2A',
+    borderColor: '#1A1A1A',
   },
-  cardDone: { opacity: 0.5 },
-  cardName: { color: '#F5F5F5', fontSize: 15, fontWeight: 'bold' },
-  cardNameDone: { textDecorationLine: 'line-through' },
-  cardDescription: { color: '#A8A8A8', fontSize: 13, marginTop: 2 },
-  cardDate: { color: '#6B6B6B', fontSize: 12, marginTop: 6 },
-  cardActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 12, marginTop: 6 },
-  actionButton: { padding: 4 },
-  actionText: { fontSize: 16 },
+  cardDone: { 
+    opacity: 0.4 
+  },
+  cardName: { 
+    color: '#FFFFFF', 
+    fontSize: 15, 
+    fontWeight: '600' 
+  },
+  cardNameDone: { 
+    textDecorationLine: 'line-through',
+    color: '#666666'
+  },
+  cardDescription: { 
+    color: '#888888', 
+    fontSize: 13, 
+    marginTop: 4 
+  },
+  cardDate: { 
+    color: '#555555', 
+    fontSize: 12, 
+    marginTop: 8,
+    fontWeight: '500'
+  },
+  cardActions: { 
+    flexDirection: 'row', 
+    justifyContent: 'flex-end', 
+    gap: 16, 
+    marginTop: 12 
+  },
+  actionButton: { 
+    padding: 4 
+  },
   confirmCard: {
-    backgroundColor: '#1A2A1A',
+    backgroundColor: '#0A1A0A',
     marginHorizontal: 16,
-    marginBottom: 6,
-    padding: 10,
+    marginBottom: 8,
+    padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#2A4A2A',
+    borderColor: '#1A3A1A',
   },
-  confirmText: { color: '#A8E6A8', fontSize: 13, textAlign: 'center' },
+  confirmText: { 
+    color: '#4CAF50', 
+    fontSize: 13, 
+    textAlign: 'center',
+    fontWeight: '500'
+  },
   footer: {
     borderTopWidth: 1,
-    borderTopColor: '#1F1F1F',
-    paddingVertical: 10,
+    borderTopColor: '#1A1A1A',
+    paddingVertical: 12,
     alignItems: 'center',
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#000000',
   },
-  footerText: { color: '#6B6B6B', fontSize: 12 },
+  footerText: { 
+    color: '#444444', 
+    fontSize: 12 
+  },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: 'rgba(0,0,0,0.9)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#111111',
     width: '90%',
     maxWidth: 400,
     padding: 20,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#2A2A2A',
+    borderColor: '#1A1A1A',
   },
   modalTitle: {
-    color: '#F5F5F5',
+    color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    fontWeight: '700',
+    marginBottom: 20,
     textAlign: 'center',
   },
-  label: { color: '#A8A8A8', fontSize: 13, marginBottom: 4 },
+  label: { 
+    color: '#888888', 
+    fontSize: 13, 
+    marginBottom: 6,
+    fontWeight: '500'
+  },
   input: {
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#000000',
     borderWidth: 1,
     borderColor: '#2A2A2A',
-    borderRadius: 8,
-    padding: 10,
-    color: '#F5F5F5',
+    borderRadius: 10,
+    padding: 12,
+    color: '#FFFFFF',
     fontSize: 14,
-    marginBottom: 12,
+    marginBottom: 14,
   },
-  textArea: { minHeight: 50, textAlignVertical: 'top' },
-  modalButtons: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, marginTop: 8 },
-  modalButton: { flex: 1, padding: 12, borderRadius: 8, alignItems: 'center' },
-  modalButtonCancel: { backgroundColor: '#2A2A2A' },
-  modalButtonSave: { backgroundColor: '#FFD700' },
-  modalButtonText: { color: '#000', fontWeight: '600', fontSize: 14 },
+  textArea: { 
+    minHeight: 60, 
+    textAlignVertical: 'top' 
+  },
+  modalButtons: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    gap: 12, 
+    marginTop: 8 
+  },
+  modalButton: { 
+    flex: 1, 
+    padding: 14, 
+    borderRadius: 10, 
+    alignItems: 'center' 
+  },
+  modalButtonCancel: { 
+    backgroundColor: '#1A1A1A' 
+  },
+  modalButtonSave: { 
+    backgroundColor: '#FFFFFF' 
+  },
+  modalButtonTextCancel: { 
+    color: '#FFFFFF', 
+    fontWeight: '600', 
+    fontSize: 14 
+  },
+  modalButtonTextSave: { 
+    color: '#000000', 
+    fontWeight: '600', 
+    fontSize: 14 
+  },
 });

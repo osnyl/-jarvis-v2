@@ -1,11 +1,13 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 
 export default function SecurityScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [lastLogin, setLastLogin] = useState<string>('Chargement...');
 
   useEffect(() => {
@@ -24,45 +26,42 @@ export default function SecurityScreen() {
     loadLastLogin();
   }, []);
 
+  const securityItems = [
+    { icon: 'lock-closed-outline', title: 'Authentification', text: 'Google Sign-In · Compte securise' },
+    { icon: 'folder-outline', title: 'Donnees personnelles', text: 'Stockees localement sur votre appareil' },
+    { icon: 'shield-checkmark-outline', title: 'Chiffrement', text: 'Vos donnees sont chiffrees' },
+    { icon: 'time-outline', title: 'Derniere connexion', text: lastLogin },
+    { icon: 'phone-portrait-outline', title: 'Appareils connectes', text: 'Redmi 14C (actuel)' },
+  ];
+
   return (
     <View style={styles.container}>
-      {/* HEADER FIXE */}
-      <View style={styles.header}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Sécurité</Text>
+        <Text style={styles.headerTitle}>Securite</Text>
+        <View style={styles.backButton} />
       </View>
 
-      {/* CONTENU DÉFILABLE */}
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>🔐 Authentification</Text>
-          <Text style={styles.cardText}>Google Sign-In · Compte sécurisé</Text>
-        </View>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {securityItems.map((item, index) => (
+          <View key={index} style={styles.card}>
+            <View style={styles.cardHeader}>
+              <View style={styles.iconBox}>
+                <Ionicons name={item.icon as any} size={18} color="#FFFFFF" />
+              </View>
+              <Text style={styles.cardTitle}>{item.title}</Text>
+            </View>
+            <Text style={styles.cardText}>{item.text}</Text>
+          </View>
+        ))}
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>📁 Données personnelles</Text>
-          <Text style={styles.cardText}>Stockées localement sur votre appareil</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>🔒 Chiffrement</Text>
-          <Text style={styles.cardText}>Vos données sont chiffrées</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>🕒 Dernière connexion</Text>
-          <Text style={styles.cardText}>{lastLogin}</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>📱 Appareils connectés</Text>
-          <Text style={styles.cardText}>Redmi 14C (actuel)</Text>
-        </View>
-
-        <TouchableOpacity style={styles.logoutCard} onPress={() => router.push('/settings')}>
-          <Text style={styles.logoutText}>⚙️ Gérer dans Paramètres</Text>
+        <TouchableOpacity style={styles.settingsButton} onPress={() => router.push('/settings')} activeOpacity={0.8}>
+          <Ionicons name="settings-outline" size={18} color="#FFFFFF" />
+          <Text style={styles.settingsText}>Gerer dans Parametres</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -72,26 +71,29 @@ export default function SecurityScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#000000',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    backgroundColor: '#0A0A0A',
+    paddingBottom: 12,
+    backgroundColor: '#000000',
     borderBottomWidth: 1,
-    borderBottomColor: '#1F1F1F',
+    borderBottomColor: '#1A1A1A',
   },
   backButton: {
-    padding: 4,
-    marginRight: 12,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: 18,
-    color: '#E5E5E5',
-    fontWeight: 'bold',
-    letterSpacing: 4,
+    color: '#FFFFFF',
+    fontWeight: '700',
+    letterSpacing: 2,
   },
   scrollView: {
     flex: 1,
@@ -101,35 +103,54 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   card: {
-    backgroundColor: '#141414',
+    backgroundColor: '#111111',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
     borderWidth: 1,
+    borderColor: '#1A1A1A',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 6,
+  },
+  iconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: '#1A1A1A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
     borderColor: '#2A2A2A',
   },
   cardTitle: {
-    color: '#FFD700',
+    color: '#FFFFFF',
     fontSize: 15,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontWeight: '600',
   },
   cardText: {
-    color: '#A8A8A8',
+    color: '#888888',
     fontSize: 14,
     lineHeight: 20,
+    paddingLeft: 44,
   },
-  logoutCard: {
-    backgroundColor: '#1A1212',
-    padding: 14,
-    borderRadius: 12,
+  settingsButton: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#1A1A1A',
+    paddingVertical: 14,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#3A2020',
+    borderColor: '#2A2A2A',
     marginTop: 8,
   },
-  logoutText: {
-    color: '#FF6B6B',
+  settingsText: {
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '500',
   },
