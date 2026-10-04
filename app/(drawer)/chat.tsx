@@ -15,16 +15,13 @@ import {
   Keyboard,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerToggleButton } from 'expo-router/drawer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
-
-const API_URL = Constants.expoConfig?.extra?.apiUrl ?? 'https://osnyl1403.pythonanywhere.com';
-const API_KEY = Constants.expoConfig?.extra?.apiKey ?? 'ta_cle_secrete';
+import { jarvisFetch } from '../../src/api';
 
 const STORAGE_KEY = 'chat_messages';
 
@@ -140,12 +137,8 @@ export default function ChatScreen() {
     Keyboard.dismiss();
 
     try {
-      const response = await fetch(`${API_URL}/ask`, {
+      const response = await jarvisFetch('/ask', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': API_KEY,
-        },
         body: JSON.stringify({ 
           message: userMsg,
           want_audio: false,
@@ -205,12 +198,8 @@ export default function ChatScreen() {
         encoding: FileSystem.EncodingType.Base64,
       });
       
-      const response = await fetch(`${API_URL}/upload_pdf`, {
+      const response = await jarvisFetch('/upload_pdf', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': API_KEY,
-        },
         body: JSON.stringify({
           filename: file.name,
           pdf_base64: base64,
@@ -255,12 +244,8 @@ export default function ChatScreen() {
       
       const messagesToSend = allConversations ? messages : messages.slice(-10);
       
-      const response = await fetch(`${API_URL}/generate_pdf`, {
+      const response = await jarvisFetch('/generate_pdf', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': API_KEY,
-        },
         body: JSON.stringify({
           messages: messagesToSend,
           title: 'Conversation JARVIS',

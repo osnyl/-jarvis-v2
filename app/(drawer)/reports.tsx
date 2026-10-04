@@ -16,11 +16,8 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
-
-const API_URL = Constants.expoConfig?.extra?.apiUrl ?? 'https://osnyl1403.pythonanywhere.com';
-const API_KEY = Constants.expoConfig?.extra?.apiKey ?? 'ta_cle_secrete';
+import { jarvisFetch } from '../../src/api';
 
 const NOTES_KEY = 'reports_notes';
 const ARCHIVES_KEY = 'chat_archives'; // ← Clé pour les conversations archivées
@@ -88,12 +85,8 @@ export default function ReportsScreen() {
 
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/ask`, {
+      const response = await jarvisFetch('/ask', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': API_KEY,
-        },
         body: JSON.stringify({ message: `Analyse ce texte et donne-moi des conseils : ${text}` }),
       });
       const data = await response.json();
@@ -160,12 +153,8 @@ export default function ReportsScreen() {
 
   const generateArchivePDF = async (archive: Archive) => {
     try {
-      const response = await fetch(`${API_URL}/generate_pdf`, {
+      const response = await jarvisFetch('/generate_pdf', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': API_KEY,
-        },
         body: JSON.stringify({
           messages: archive.messages,
           title: `Conversation du ${archive.date}`,
