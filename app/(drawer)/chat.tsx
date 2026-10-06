@@ -154,7 +154,10 @@ export default function ChatScreen() {
       speakMessage(reply);
       
     } catch (error) {
-      const errorMsg = 'Erreur de connexion au serveur.';
+      const detail = error instanceof Error ? error.message : String(error);
+      const errorMsg = detail === 'AUTH_REQUIRED'
+        ? 'Session Firebase absente. Déconnectez-vous puis reconnectez-vous.'
+        : `Erreur serveur (${detail}).`;
       const newMessages = [...updatedMessages, { text: errorMsg, isUser: false, animated: false }];
       setMessages(newMessages);
       saveMessages(newMessages);
